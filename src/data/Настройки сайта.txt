@@ -1,0 +1,3 @@
+ftp://95.163.235.226
+login: tatarstones_ftp
+password: U2AAPc4u2AADd6W2
