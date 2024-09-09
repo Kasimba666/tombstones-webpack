@@ -35,7 +35,6 @@
         </iframe>
       </div>
     </div>
-    <div>
       <div v-if="!!imgsOther">
         <div class="collection-images" v-for="w of imgsOther">
           <!--          <div>{{w['categoryTitle']}}</div>-->
@@ -51,16 +50,16 @@
           </div>
         </div>
       </div>
-    </div>
   </div>
 </template>
 
 <script>
 import {mapGetters, mapMutations} from "vuex";
+import ObjsMap from "@/components/spatialObjects/ObjsMap";
 
 export default {
   name: 'ObjDetails',
-  components: {},
+  components: {ObjsMap},
   props: [],
   data() {
     return {

@@ -5,13 +5,13 @@
               :geojson="filteredGeojson(filtersValues, schemeName)"
               :imgs="filteredImagesCards(filtersValues, schemeName)"
               :filters="filters"
-              :imgsOld="filteredImgs(filtersValues, schemeName)"
               :scheme="schemeObjs"
               :filtersValues="filtersValues"
               :currentID="currentID"
               @onChangeFiltersValues="onChangeFiltersValues"
               @onSetCurrentID="onSetCurrentID"
     ></ObjsMain>
+<!--              :imgsOld="filteredImgs(filtersValues, schemeName)"-->
 <!--    filteredImgs: {{filteredImgs(filtersValues, schemeName)}}-->
 <!--    filteredImagesCards: {{filteredImagesCards(filtersValues, schemeName)}}-->
 <!--    imgsByCategories: {{filteredImgsByCategories(filtersValues, schemeName)}}-->

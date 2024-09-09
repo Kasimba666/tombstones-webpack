@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import {mapGetters, mapState} from "vuex";
+
 export default {
   name: 'ObjsFiltersAndList',
   components: {},
@@ -12,7 +14,10 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+...mapState(['filtersValues']),
+    ...mapGetters(['filteredGeojson', 'filters'])
+  },
   methods: {},
   mounted() {
   },
