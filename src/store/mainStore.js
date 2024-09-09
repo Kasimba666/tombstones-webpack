@@ -235,45 +235,6 @@ export default new Vuex.Store({
                 }
             }
         },
-        // filteredImgs: (state, getters) => (filtersValues) => {//изображения,соответствующие отфильтрованным объектам в geojson
-        //     let IDs = getters.filteredGeojson(filtersValues)?.features.map(v => v.properties.id.toString());
-        //     return state.imgs.filter((v) => {
-        //         if (IDs.includes(v.id)) return v
-        //     });
-        // },
-        // filteredImgsByCategories: (state, getters) => (filtersValues) => {
-        //     if (!!getters.filteredImgs(filtersValues) && getters.filteredImgs(filtersValues).length > 0) {
-        //         return [...new Set(getters.filteredImgs(filtersValues).map(v => {
-        //             return v['category']
-        //         }))]
-        //             .map((v) => {
-        //                 return {
-        //                     category: v,
-        //                     categoryTitle: getters.filteredImgs(filtersValues).filter((w) => {
-        //                         if (w['category'] === v) {
-        //                             return w
-        //                         }
-        //                     })[0]['category_title'],
-        //                     imgs: getters.filteredImgs(filtersValues).filter((w) => {
-        //                         if (w['category'] === v) {
-        //                             return w
-        //                         }
-        //                     }).sort((a, b) => {
-        //                         return (a['order'] > b['order']) ? 1 : -1
-        //                     }).map((s) => {
-        //                         console.log(s);
-        //                         return {
-        //                             label: s['caption'],
-        //                             small: require(`@/assets/img/${s['path']}/${smallImgPath}${s['filename']}`),
-        //                             large: require(`@/assets/img/${s['path']}/${largeImgPath}${s['filename']}`),
-        //                         }
-        //                     })
-        //                 }
-        //             })
-        //     } else {
-        //         return null
-        //     }
-        // },
         filteredImagesCards: (state, getters) => (filtersValues) => {
             let IDs = getters.filteredGeojson(filtersValues, 'stones')?.features.map(v => v.properties.id.toString());
             return state.imgs.filter(v => IDs.includes(v.id) && v['category'] === 'cards').map((v) => {

@@ -11,7 +11,6 @@
               @onChangeFiltersValues="onChangeFiltersValues"
               @onSetCurrentID="onSetCurrentID"
     ></ObjsMain>
-<!--              :imgsOld="filteredImgs(filtersValues, schemeName)"-->
 <!--    filteredImgs: {{filteredImgs(filtersValues, schemeName)}}-->
 <!--    filteredImagesCards: {{filteredImagesCards(filtersValues, schemeName)}}-->
 <!--    imgsByCategories: {{filteredImgsByCategories(filtersValues, schemeName)}}-->

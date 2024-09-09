@@ -1,20 +1,9 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <div class="objs-main">
           <router-view/>
-<!--          <ObjsDetails-->
-<!--              :style="{display: visibleDetails ?'block':'none'}"-->
-<!--              :geojson="geojson"-->
-<!--              :id="currentID"-->
-<!--              :scheme="scheme"-->
-<!--              :imgs="detailsImgs"-->
-<!--              :details="detailsGeojson"-->
-<!--              @clickCloseDetails="closeDetails"-->
-<!--              @onSetCurrentID="onSetCurrentID"-->
-<!--          >-->
-<!--          </ObjsDetails>-->
           <div :style="{display: visibleFiltersAndList ?'block':'none'}">
             <objs-filters
                 v-if="!!this.filters"
@@ -43,32 +32,30 @@
           </div>
         </div>
       </div>
-<!--     <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">-->
-<!--        <div class="objs-map" v-if="!modeShort || currentViewMode === 'map' || visibleDetails">-->
-<!--          <objs-map v-if="!!collectionFeaturesForMaps"-->
-<!--                    :collectionFeatures="collectionFeaturesForMaps"-->
-<!--                    :oneFeature="oneFeatureForMaps"-->
-<!--                    :scheme="scheme"-->
-<!--                    @clickPoint="setCurrentIDFromObjsMap"-->
-<!--          >-->
-<!--          </objs-map>-->
-<!--        </div>-->
-<!--      </div>-->
+     <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <div class="objs-map" v-if="!modeShort || currentViewMode === 'map' || visibleDetails">
+          <objs-map v-if="!!collectionFeaturesForMaps"
+                    :collectionFeatures="collectionFeaturesForMaps"
+                    :oneFeature="oneFeatureForMaps"
+                    :scheme="scheme"
+                    @clickPoint="setCurrentIDFromObjsMap"
+          >
+          </objs-map>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import ObjsList from "@/components/spatialObjects/ObjsList";
-import ObjDetails from "@/components/spatialObjects/ObjDetails";
-import ObjsDetails from "@/components/spatialObjects/ObjsDetails";
 import ObjsFilters from "@/components/spatialObjects/ObjsFilters";
 import ObjsMap from "@/components/spatialObjects/ObjsMap";
 import ObjsViewModePanel from "@/components/spatialObjects/ObjsViewModePanel";
 import {useScreen} from '@/composables/useScreen.js'
 
 export default {
-  components: {ObjsViewModePanel, ObjsList, ObjsDetails, ObjDetails, ObjsFilters, ObjsMap},
+  components: {ObjsViewModePanel, ObjsList, ObjsFilters, ObjsMap},
   props: {
     geojson: Object, //выборка объектов
     imgsOld: Array, //выборка изображений для ObjsDetails
@@ -123,32 +110,6 @@ export default {
 
     },
 
-    // detailsGeojson() {
-    //   // console.log('detailsGeojson currentFeature:', this.currentFeature);
-    //   if (!!this.currentFeature) {
-    //     let tempDetails = [];
-    //     this.scheme.forEach((item) => {
-    //       if (item.inDetails === 1) {
-    //         tempDetails.push({
-    //           attrName: item.attrName,
-    //           titleName: item.title,
-    //           value: this.currentFeature.features[0].properties[item.attrName]
-    //         });
-    //       }
-    //     });
-    //     return tempDetails
-    //   }
-    // },
-    // detailsImgs() {
-    //   // console.log('detailsImgs:', 'currentFeature:', this.currentFeature, 'currentID:', this.currentID);
-    //   if (!!this.currentFeature && (this.imgsOld.length > 0)) {
-    //     return this.imgsOld.filter((v) => {
-    //       if (v['id'].toString() === this.currentFeature.features[0].properties['id'].toString()) {
-    //         return v
-    //       }
-    //     });
-    //   }
-    // },
 
     currentFeature() {
       if (!this.currentID || !this.geojson.features || this.geojson.features.length === 0 || !this.geojson.features[0]) return null;
@@ -221,7 +182,7 @@ export default {
   methods: {
     setCurrentIDFromObjsMap(id) {
       this.visibleDetails = true
-      this.visibleFiltersAndList = false;
+      // this.visibleFiltersAndList = false;
       this.$emit('onSetCurrentID', id);
       this.$router.push({name: 'ObjDetails', params: {id: id}});
     },
@@ -240,9 +201,7 @@ export default {
     onChangeFiltersValues(v) {
       this.$emit('onChangeFiltersValues', v);
     },
-    // onSetCurrentID(v) {
-    //   this.$emit('onSetCurrentID', v);
-    // },
+
     setViewMode(v) {
       this.currentViewMode = v;
     },
