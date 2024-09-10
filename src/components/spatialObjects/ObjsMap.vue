@@ -1,5 +1,7 @@
 <template>
   <div class="ObjsMap">
+<!--    oneFeatureForMaps: {{oneFeatureForMaps ?? 'нет'}}<br/>-->
+<!--    collectionFeaturesForMaps: {{collectionFeaturesForMaps?.features.length}}<br/>-->
     <div id="map" class="map">
       <div id="info"></div>
     </div>
@@ -23,6 +25,7 @@ import {OSM, Vector as VectorSource} from 'ol/source.js';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
 import Overlay from 'ol/Overlay.js';
 import {ScaleLine} from 'ol/control.js';
+import {mapGetters, mapMutations, mapState} from "vuex";
 
 
 const styles = {
@@ -58,9 +61,9 @@ export default {
   name: 'ObjsMap',
   components: {},
   props: {
+    scheme: Array,
     collectionFeatures: Object,
     oneFeature: Object,
-    scheme: Array,
   },
   emits: ['clickPoint'],
   data() {
@@ -72,6 +75,9 @@ export default {
     }
   },
   computed: {
+    // ...mapState(['schemeObjs']),
+    // ...mapGetters(['oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    // ...mapMutations(['setCurrentID']),
     bounds() {
       if (!!this.collectionFeatures && this.collectionFeatures['features'].length > 0) {
         let coordinates = this.collectionFeatures['features'].map(v => {
@@ -249,14 +255,9 @@ export default {
 
     onSetCurrentPoint() {
       this.$store.commit('setCurrentID', currentPointFeature.features[0].properties.id);
-      this.$emit('clickPoint', currentPointFeature.features[0].properties.id);
-
-      // this.$router.push({name: 'PgStones'});
-      // // this.$router.push({name: this.$route.name});
-      // setTimeout(() => {
-      //   this.$router.push({name: 'ObjDetails', params: {id: currentPointFeature.features[0].properties.id}})
-      // }, 50);
+      // this.$emit('clickPoint', currentPointFeature.features[0].properties.id);
     },
+
   },
   mounted() {
     this.initMap();

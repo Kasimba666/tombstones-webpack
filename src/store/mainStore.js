@@ -8,7 +8,7 @@ const smallImgPath = '300px/';
 const largeImgPath = 'large/';
 export default new Vuex.Store({
     state: {
-        schemeObjs: [
+        scheme: [
             {
                 attrName: 'id',
                 title: 'id',
@@ -159,12 +159,11 @@ export default new Vuex.Store({
         currentID: null,
     },
     getters: {
-
         //фильтры построены на основе схемы, справочники для фильтров берутся из полного набора данных соответствующего раздела схемы
         filters: (state) => {
             if (!!state.geojson) {
                 let newFilters = [];
-                state.schemeObjs.forEach((attr) => {
+                state.scheme.forEach((attr) => {
                     if (attr.filterType === 'input') {
                         newFilters.push({
                             attrName: attr.attrName,
@@ -199,17 +198,17 @@ export default new Vuex.Store({
                             listValues: listValues.sort()
                         });
                     }//dropdown
-                }); //end of forEach.scheme
+                });
                 return newFilters;
             }
         },
-        filteredGeojson: (state) => (filtersValues) => {//на основе значений фильтров
+        filteredGeojson: (state) => {//на основе значений фильтров
             if (!!state.geojson) {
                 let newFeatures = [];
                 state.geojson.features.forEach((item) => {
                     //проверить item на соответствие значениям фильтров
                     let filterPass = true;
-                    filtersValues.forEach((fV) => {
+                    state.filtersValues.forEach((fV) => {
                         if (!(
                             ((fV.type === 'dropdown') && ((fV.value === item.properties[fV.attrName]) || (fV.value === null))) ||
                             ((fV.type === 'input') && (fV.value === null) || (fV.value === '')
@@ -235,8 +234,8 @@ export default new Vuex.Store({
                 }
             }
         },
-        filteredImagesCards: (state, getters) => (filtersValues) => {
-            let IDs = getters.filteredGeojson(filtersValues, 'stones')?.features.map(v => v.properties.id.toString());
+        filteredImagesCards: (state, getters) => {
+            let IDs = getters.filteredGeojson?.features.map(v => v.properties.id.toString());
             return state.imgs.filter(v => IDs.includes(v.id) && v['category'] === 'cards').map((v) => {
                 return {
                     id: v.id,
@@ -279,12 +278,11 @@ export default new Vuex.Store({
                 return null
             }
         },
-
         detailsGeojsonByID: (state) => (id) => {
             let tempDetails = [];
             let findedFeature = state.geojson.features.find(v => '' + v.properties.id === '' + id);
             if (!findedFeature) return null;
-            state.schemeObjs.forEach((item) => {
+            state.scheme.forEach((item) => {
                 if (item.inDetails === 1) {
                     tempDetails.push({
                         attrName: item.attrName,
@@ -295,7 +293,63 @@ export default new Vuex.Store({
             });
             return tempDetails
         },
-
+        currentFeature(state, getters) {
+            if (!state.currentID || !getters.filteredGeojson.features || getters.filteredGeojson.features.length === 0 || !getters.filteredGeojson.features[0]) return null;
+            let newFeature = getters.filteredGeojson.features.find(v => v.properties.id.toString() === state.currentID.toString());
+            if (!!newFeature) {
+                return {
+                    type: getters.filteredGeojson.type,
+                    name: getters.filteredGeojson.name,
+                    crs: getters.filteredGeojson.crs,
+                    features: [getters.filteredGeojson.features.find(v => v.properties.id.toString() === state.currentID.toString())],
+                }
+            } else {
+                return null
+            }
+        },
+        oneFeatureForMaps(state, getters) {
+            if (!!getters.currentFeature) {
+                let newProperties = {};
+                state.scheme.forEach((item) => {
+                    if (item.inMap === 1) {
+                        newProperties[item.attrName] = getters.currentFeature.features[0].properties[item.attrName];
+                    }
+                });
+                return {
+                    type: getters.currentFeature.type,
+                    name: getters.currentFeature.name,
+                    crs: getters.currentFeature.crs,
+                    features: [{
+                        type: getters.currentFeature.features[0].type,
+                        properties: newProperties,
+                        geometry: getters.currentFeature.features[0].geometry,
+                    }],
+                }
+            } else return null
+        },
+        collectionFeaturesForMaps(state, getters) {
+            if (!!getters.filteredGeojson && !!getters.filteredGeojson.features) {
+                let newFeatures = getters.filteredGeojson.features.map((feature) => {
+                    let newProperties = {};
+                    state.scheme.forEach((item) => {
+                        if (item.inMap === 1) {
+                            newProperties[item.attrName] = feature.properties[item.attrName];
+                        }
+                    });
+                    return {
+                        type: feature.type,
+                        properties: newProperties,
+                        geometry: feature.geometry,
+                    }
+                });
+                return {
+                    type: getters.filteredGeojson.type,
+                    name: getters.filteredGeojson.name,
+                    crs: getters.filteredGeojson.crs,
+                    features: newFeatures,
+                }
+            }
+        },
     },
     mutations: {
         setGeojson(state, v) {

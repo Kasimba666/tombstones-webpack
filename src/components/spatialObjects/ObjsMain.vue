@@ -1,6 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row">
+      collectionFeaturesForMaps: {{ collectionFeaturesForMaps.features.length }}
       <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <div class="objs-main">
           <router-view/>
@@ -32,15 +33,16 @@
           </div>
         </div>
       </div>
-     <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <div class="objs-map" v-if="!modeShort || currentViewMode === 'map' || visibleDetails">
-          <objs-map v-if="!!collectionFeaturesForMaps"
-                    :collectionFeatures="collectionFeaturesForMaps"
-                    :oneFeature="oneFeatureForMaps"
-                    :scheme="scheme"
-                    @clickPoint="setCurrentIDFromObjsMap"
-          >
-          </objs-map>
+            <objs-map
+                style="height: 90dvh"
+                :collectionFeatures="collectionFeaturesForMaps"
+                :oneFeature="oneFeatureForMaps"
+                :scheme="scheme"
+                @clickPoint="setCurrentIDFromObjsMap"
+            >
+            </objs-map>
         </div>
       </div>
     </div>
@@ -53,19 +55,14 @@ import ObjsFilters from "@/components/spatialObjects/ObjsFilters";
 import ObjsMap from "@/components/spatialObjects/ObjsMap";
 import ObjsViewModePanel from "@/components/spatialObjects/ObjsViewModePanel";
 import {useScreen} from '@/composables/useScreen.js'
+import {mapGetters, mapMutations, mapState} from "vuex";
 
 export default {
   components: {ObjsViewModePanel, ObjsList, ObjsFilters, ObjsMap},
   props: {
-    geojson: Object, //выборка объектов
-    imgsOld: Array, //выборка изображений для ObjsDetails
-    imgs: Array, //выборка изображений для ObjsList
-    scheme: Array, //конфиг, отправляется в ObjsMap
-    filters: Array, //набор фильтров
-    filtersValues: Array, //значения фильтров
-    currentID: Number,
   },
-  emits: ['onChangeFiltersValues', 'onSetCurrentID'],
+
+  emits: ['onChangeFiltersValues'],
   data() {
     return {
       json: null,//набор объектов
@@ -84,7 +81,9 @@ export default {
     }
   },
   computed: {
-
+    ...mapState(['scheme', 'currentID', 'filtersValues']),
+    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'oneFeatureForMaps' ,'collectionFeaturesForMaps']),
+    ...mapMutations(['setCurrentID', 'setFiltersValues']),
     cols() {
       let tempCols = [];
       this.scheme.forEach((item) => {
@@ -95,15 +94,15 @@ export default {
       return tempCols;
     },
     rows() {
-      if (this.geojson === null) return null;
-      let tempRows = this.geojson.features.map((feature) => {
+      if (this.filteredGeojson === null) return null;
+      let tempRows = this.filteredGeojson.features.map((feature) => {
         let tempProperties = {};
         this.scheme.forEach((item) => {
           if (item.inTable === 1) {
             tempProperties[item.attrName] = feature.properties[item.attrName];
           }
         });
-        tempProperties['imgs'] = this.imgs.filter((v) => v['id'].toString() === feature.properties['id'].toString())[0]?.img
+        tempProperties['imgs'] = this.filteredImagesCards.filter((v) => v['id'].toString() === feature.properties['id'].toString())[0]?.img
         return tempProperties
       });
       return tempRows.sort((a, b) => a['name'].localeCompare(b['name']));
@@ -111,65 +110,6 @@ export default {
     },
 
 
-    currentFeature() {
-      if (!this.currentID || !this.geojson.features || this.geojson.features.length === 0 || !this.geojson.features[0]) return null;
-      let newFeature = this.geojson.features.find(v => v.properties.id.toString() === this.currentID.toString());
-      if (!!newFeature) {
-        return {
-          type: this.geojson.type,
-          name: this.geojson.name,
-          crs: this.geojson.crs,
-          features: [this.geojson.features.find(v => v.properties.id.toString() === this.currentID.toString())],
-        }
-      } else {
-        // console.log('currentFeature newFeature:', newFeature);
-        return null
-      };
-    },
-    oneFeatureForMaps() {
-
-      if (!!this.currentFeature) {
-        let newProperties = {};
-        this.scheme.forEach((item) => {
-          if (item.inMap === 1) {
-            newProperties[item.attrName] = this.currentFeature.features[0].properties[item.attrName];
-          }
-        });
-        return {
-          type: this.currentFeature.type,
-          name: this.currentFeature.name,
-          crs: this.currentFeature.crs,
-          features: [{
-            type: this.currentFeature.features[0].type,
-            properties: newProperties,
-            geometry: this.currentFeature.features[0].geometry,
-          }],
-        }
-      } else return null
-    },
-    collectionFeaturesForMaps() {
-      if (!!this.geojson) {
-        let newFeatures = this.geojson.features.map((feature) => {
-          let newProperties = {};
-          this.scheme.forEach((item) => {
-            if (item.inMap === 1) {
-              newProperties[item.attrName] = feature.properties[item.attrName];
-            }
-          });
-          return {
-            type: feature.type,
-            properties: newProperties,
-            geometry: feature.geometry,
-          }
-        });
-        return {
-          type: this.geojson.type,
-          name: this.geojson.name,
-          crs: this.geojson.crs,
-          features: newFeatures,
-        }
-      }
-    },
 
     modeList() {
       return this.modeShort ? 'cards' : 'table'
@@ -183,13 +123,13 @@ export default {
     setCurrentIDFromObjsMap(id) {
       this.visibleDetails = true
       // this.visibleFiltersAndList = false;
-      this.$emit('onSetCurrentID', id);
+      this.onSetCurrentID(id);
       this.$router.push({name: 'ObjDetails', params: {id: id}});
     },
     setCurrentIDFromObjsList(id) {
       this.visibleDetails = true
       // this.visibleFiltersAndList = false;
-      this.$emit('onSetCurrentID', id);
+      this.onSetCurrentID(id);
       this.$router.push({name: 'ObjDetails', params: {id: id}});
     },
 
@@ -197,18 +137,18 @@ export default {
     //   // this.visibleDetails = false;
     //   this.visibleFiltersAndList = true;
     // },
-
     onChangeFiltersValues(v) {
-      this.$emit('onChangeFiltersValues', v);
+      this.$store.commit('setFiltersValues', v);
     },
-
+    onSetCurrentID(v) {
+      this.$store.commit('setCurrentID', v)
+    },
     setViewMode(v) {
       this.currentViewMode = v;
     },
 
   },
   mounted() {
-    // this.initFiltersValues();
   },
 }
 </script>

@@ -3,7 +3,7 @@
             :geojson="filtered"
             :imgs="imgs"
             :filters="filters"
-            :scheme="schemeObjs"
+            :scheme="scheme"
             @onSetFiltersValues="setFiltersValues"
   ></ObjsMain>
 </template>

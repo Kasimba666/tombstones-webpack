@@ -15,8 +15,8 @@ export default {
     return {}
   },
   computed: {
-...mapState(['filtersValues']),
-    ...mapGetters(['filteredGeojson', 'filters'])
+    ...mapState(['filtersValues']),
+    ...mapGetters(['filteredGeojson', 'filters']),
   },
   methods: {},
   mounted() {

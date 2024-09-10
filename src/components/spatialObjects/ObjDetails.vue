@@ -27,7 +27,6 @@
       </div>
       <div class="sketchfab-embed-wrapper"
            v-if="!!details && sketchfabLink != null">
-<!--        sketchfab: {{ sketchfab }}-->
         <iframe allowfullscreen mozallowfullscreen="true"
                 webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking
                 execution-while-out-of-viewport execution-while-not-rendered web-share
@@ -35,7 +34,7 @@
         </iframe>
       </div>
     </div>
-      <div v-if="!!imgsOther">
+    <div v-if="!!imgsOther">
         <div class="collection-images" v-for="w of imgsOther">
           <!--          <div>{{w['categoryTitle']}}</div>-->
           <div v-for="(v,i) of w.imgs" :key="i">
@@ -50,6 +49,7 @@
           </div>
         </div>
       </div>
+
   </div>
 </template>
 
@@ -63,8 +63,7 @@ export default {
   props: [],
   data() {
     return {
-      // details: null,
-      // imgs: null,
+
     }
   },
   computed: {
