@@ -98,10 +98,7 @@ export default {
   },
   methods: {
     goBack() {
-      //извлечь предыдущий маршрут
-      let parentRoute = this.$route.matched[this.$route.matched.length - 2];
-      // this.$router.push({name: parentRoute.name});
-      this.$router.push({name: parentRoute.name, query: {id: this.$route.params.id}});
+      this.$router.push({name: 'ObjsFiltersAndList'});
     },
   },
   mounted() {

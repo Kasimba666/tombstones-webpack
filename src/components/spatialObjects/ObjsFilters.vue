@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!!filtersValues[0]" class="objs-filters">
+  <div v-if="filtersValues.length>0" class="objs-filters">
     <div v-for="(filter, f) of filters" :key="f" class="filter-block">
       <div class="label-placeholder">
         <label for="filter_`${f}`">{{ filter.title }}: </label>

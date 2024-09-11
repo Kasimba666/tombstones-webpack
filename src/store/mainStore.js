@@ -407,7 +407,7 @@ export default new Vuex.Store({
         },
         initFiltersValues({state, commit, getters}) {
             if (!!getters.filters && state.filtersValues.length===0) {
-                commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, type: item.type, value: null}}));
+                commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, value: null}}));
             }
 
         },

@@ -1,38 +1,38 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      collectionFeaturesForMaps: {{ collectionFeaturesForMaps.features.length }}
+      {{ stringified }}<br/>
       <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <div class="objs-main">
           <router-view/>
-          <div :style="{display: visibleFiltersAndList ?'block':'none'}">
-            <objs-filters
-                v-if="!!this.filters"
-                :filtersValues="filtersValues"
-                :filters="filters"
-                @onChangeFiltersValues="onChangeFiltersValues"
-            >
-            </objs-filters>
-            <objs-view-mode-panel
-                v-if="modeShort"
-                :allViewModes="viewModes"
-                :currentViewMode="currentViewMode"
-                @setViewMode="setViewMode"
-            />
+<!--          <div :style="{display: visibleFiltersAndList ?'block':'none'}">-->
+<!--            <objs-filters-->
+<!--                v-if="!!this.filters"-->
+<!--                :filtersValues="filtersValues"-->
+<!--                :filters="filters"-->
+<!--                @onChangeFiltersValues="onChangeFiltersValues"-->
+<!--            >-->
+<!--            </objs-filters>-->
+<!--            <objs-view-mode-panel-->
+<!--                v-if="modeShort"-->
+<!--                :allViewModes="viewModes"-->
+<!--                :currentViewMode="currentViewMode"-->
+<!--                @setViewMode="setViewMode"-->
+<!--            />-->
 
-            <objs-list v-if="!modeShort || currentViewMode === 'list'"
-                       :rows="rows"
-                       :cols="cols"
-                       :currentID="currentID"
-                       :modeList="modeList"
-                       @clickRow="setCurrentIDFromObjsList"
-            >
-              <!--                       :currentRow="currentRow"-->
-            </objs-list>
+<!--            <objs-list v-if="!modeShort || currentViewMode === 'list'"-->
+<!--                       :rows="rows"-->
+<!--                       :cols="cols"-->
+<!--                       :currentID="currentID"-->
+<!--                       :modeList="modeList"-->
+<!--                       @clickRow="setCurrentIDFromObjsList"-->
+<!--            >-->
+<!--            </objs-list>-->
 
-          </div>
+<!--          </div>-->
         </div>
       </div>
+<!--      <ObjsFiltersAndList/>-->
       <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
         <div class="objs-map" v-if="!modeShort || currentViewMode === 'map' || visibleDetails">
             <objs-map
@@ -56,13 +56,13 @@ import ObjsMap from "@/components/spatialObjects/ObjsMap";
 import ObjsViewModePanel from "@/components/spatialObjects/ObjsViewModePanel";
 import {useScreen} from '@/composables/useScreen.js'
 import {mapGetters, mapMutations, mapState} from "vuex";
+import ObjsFiltersAndList from "@/components/spatialObjects/ObjsFiltersAndList";
 
 export default {
-  components: {ObjsViewModePanel, ObjsList, ObjsFilters, ObjsMap},
+  components: {ObjsViewModePanel, ObjsFiltersAndList, ObjsList, ObjsFilters, ObjsMap},
   props: {
   },
-
-  emits: ['onChangeFiltersValues'],
+  // emits: ['onChangeFiltersValues'],
   data() {
     return {
       json: null,//набор объектов
@@ -110,14 +110,18 @@ export default {
     },
 
 
-
     modeList() {
       return this.modeShort ? 'cards' : 'table'
     },
     modeShort() {
       return this.screen.type === 'xs' || this.screen.type === 'sm'
     },
-
+    stringified() {
+      return JSON.stringify(this.filtersValues.reduce((s,v) => {
+        s[v['attrName']] = v['value'];
+        return s;
+      }, {}));
+    },
   },
   methods: {
     setCurrentIDFromObjsMap(id) {

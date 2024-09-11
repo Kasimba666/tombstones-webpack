@@ -75,9 +75,7 @@ export default {
     }
   },
   computed: {
-    // ...mapState(['schemeObjs']),
-    // ...mapGetters(['oneFeatureForMaps', 'collectionFeaturesForMaps']),
-    // ...mapMutations(['setCurrentID']),
+
     bounds() {
       if (!!this.collectionFeatures && this.collectionFeatures['features'].length > 0) {
         let coordinates = this.collectionFeatures['features'].map(v => {
@@ -219,10 +217,8 @@ export default {
             features: [],
           }
 
-
           currentPointFeature.features.push(this.collectionFeatures.features.filter((v) => ''+feature.get('id') === ''+v.properties.id)[0]);
 
-          console.log('currentPointFeature', currentPointFeature, 'feature.get(\'id\')', feature.get('id'));
           this.popupTitle = feature.get('name');
           let content = '';
           Object.entries(currentPointFeature.features[0].properties).forEach(([key, value]) => {
