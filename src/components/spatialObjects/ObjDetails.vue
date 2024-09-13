@@ -1,11 +1,11 @@
 <template>
   <div class="ObjDetails" :class="{directionColumn: modeShort}">
-    <button
-        class="btn-close"
-        @click="goBack"
-    >
-    </button>
     <div class="details">
+      <button
+          class="btn-close"
+          @click="goBack"
+      >
+      </button>
       <div class="details-properties">
         <div v-for="(detail, i) of details" :key="i">
           <div v-if="!!detail.value && detail.titleName != '3d'">
@@ -154,8 +154,9 @@ export default {
     position: absolute;
     width: 20px;
     height: 20px;
-    top: 5px;
+    top: 10px;
     right: 10px;
+    border: 1px solid grey;
     background-color: white;
     z-index: 10;
   }

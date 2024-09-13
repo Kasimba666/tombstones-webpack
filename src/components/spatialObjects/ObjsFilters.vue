@@ -1,5 +1,5 @@
 <template>
-  <div v-if="filtersValues.length>0" class="objs-filters">
+  <div v-if="filtersValues.length>0" class="ObjsFilters" :class="{heightLimited: this.screen.type === 'xl'}">
     <div v-for="(filter, f) of filters" :key="f" class="filter-block">
       <div class="label-placeholder">
         <label for="filter_`${f}`">{{ filter.title }}: </label>
@@ -33,9 +33,11 @@
 </template>
 
 <script>
-import {mapState, mapGetters, mapMutations} from "vuex";
+
+import {useScreen} from "@/composables/useScreen";
 
 export default {
+  name: 'ObjsFilters',
   components: {},
   props: {
     filtersValues: Array,
@@ -44,6 +46,13 @@ export default {
   emits: ['onChangeFiltersValues'],
   data() {
     return {
+    }
+  },
+  setup() {
+    const {screen, screenBreakpoints} = useScreen();
+    return {
+      screen,
+      screenBreakpoints
     }
   },
   computed: {
@@ -75,25 +84,32 @@ export default {
 </script>
 
 <style lang="scss">
-.objs-filters {
+.ObjsFilters {
   width: 100%;
+  height: auto;
   padding: 10px;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: start;
+  &.heightLimited {
+    height: 200px;
+  };
 
   .filter-block {
-    width: 100%;
+    width: 270px;
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: row wrap;
     justify-content: left;
     padding: 3px;
 
     .label-placeholder {
-      width: 150px;
+      width: 100px;
       height: auto;
 
     }
 
     .filter-placeholder {
-      width: 200px;
+      width: 160px;
       height: auto;
     }
   }

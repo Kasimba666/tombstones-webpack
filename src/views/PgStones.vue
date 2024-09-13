@@ -33,9 +33,7 @@ export default {
 
   },
   mounted() {
-    this.$store.dispatch('loadObjsStore');
-    this.$store.dispatch('loadImagesCSV');
-    this.$store.dispatch('initFiltersValues');
+
 
   },
 }

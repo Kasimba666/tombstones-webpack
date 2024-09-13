@@ -2,7 +2,9 @@
   <div class="viewModePanel">
     <button type="button" class="btn btn-outline-primary btn-sm"
         v-for="mode in allViewModes" key="mode"
-        @click="setViewMode(mode)">
+        :class="{active: mode === currentViewMode}"
+        @click="setViewMode(mode)"
+            >
       {{ mode === 'list' ? 'Список' : 'Карта'}}
     </button>
   </div>
