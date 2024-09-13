@@ -1,8 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row">
-      {{ stringified }}<br/>
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
         <div class="objs-main">
           <router-view/>
 <!--          <div :style="{display: visibleFiltersAndList ?'block':'none'}">-->
@@ -33,18 +32,17 @@
         </div>
       </div>
 <!--      <ObjsFiltersAndList/>-->
-      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">
-        <div class="objs-map" v-if="!modeShort || currentViewMode === 'map' || visibleDetails">
-            <objs-map
-                style="height: 90dvh"
-                :collectionFeatures="collectionFeaturesForMaps"
-                :oneFeature="oneFeatureForMaps"
-                :scheme="scheme"
-                @clickPoint="setCurrentIDFromObjsMap"
-            >
-            </objs-map>
-        </div>
-      </div>
+<!--      <div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6">-->
+<!--        <div class="objs-map" v-if="!modeShort || currentViewMode === 'map' || visibleDetails">-->
+<!--            <ObjsMap-->
+<!--                style="height: 90dvh"-->
+<!--                :collectionFeatures="collectionFeaturesForMaps"-->
+<!--                :oneFeature="oneFeatureForMaps"-->
+<!--                :scheme="scheme"-->
+<!--                @clickPoint="setCurrentIDFromObjsMap"-->
+<!--            />-->
+<!--        </div>-->
+<!--      </div>-->
     </div>
   </div>
 </template>
@@ -54,15 +52,14 @@ import ObjsList from "@/components/spatialObjects/ObjsList";
 import ObjsFilters from "@/components/spatialObjects/ObjsFilters";
 import ObjsMap from "@/components/spatialObjects/ObjsMap";
 import ObjsViewModePanel from "@/components/spatialObjects/ObjsViewModePanel";
+import ObjsFiltersAndList from "@/components/spatialObjects/ObjsFiltersAndList";
 import {useScreen} from '@/composables/useScreen.js'
 import {mapGetters, mapMutations, mapState} from "vuex";
-import ObjsFiltersAndList from "@/components/spatialObjects/ObjsFiltersAndList";
 
 export default {
   components: {ObjsViewModePanel, ObjsFiltersAndList, ObjsList, ObjsFilters, ObjsMap},
   props: {
   },
-  // emits: ['onChangeFiltersValues'],
   data() {
     return {
       json: null,//набор объектов
@@ -115,12 +112,6 @@ export default {
     },
     modeShort() {
       return this.screen.type === 'xs' || this.screen.type === 'sm'
-    },
-    stringified() {
-      return JSON.stringify(this.filtersValues.reduce((s,v) => {
-        s[v['attrName']] = v['value'];
-        return s;
-      }, {}));
     },
   },
   methods: {

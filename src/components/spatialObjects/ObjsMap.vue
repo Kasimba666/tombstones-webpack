@@ -251,7 +251,7 @@ export default {
 
     onSetCurrentPoint() {
       this.$store.commit('setCurrentID', currentPointFeature.features[0].properties.id);
-      // this.$emit('clickPoint', currentPointFeature.features[0].properties.id);
+      this.$emit('clickPoint', currentPointFeature.features[0].properties.id);
     },
 
   },
