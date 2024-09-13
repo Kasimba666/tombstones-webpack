@@ -1,20 +1,23 @@
 <template>
-  <div class="screen-monitor" v-if="DEBUG">
-    {{ screen.type }}<br/>
-    {{ screen.width }}px
-  </div>
-    <ObjsNavbar></ObjsNavbar>
-    <div class="app">
-      <router-view/>
+  <div class="app">
+    <div class="screen-monitor" v-if="DEBUG">
+      {{ screen.type }}<br/>
+      {{ screen.width }}px
     </div>
+    <AppHeader/>
+    <AppBody/>
+    <AppFooter/>
+  </div>
 </template>
 
 <script>
-import ObjsNavbar from "@/components/spatialObjects/ObjsNavBar";
-import {mapGetters, mapMutations} from "vuex";
 import {useScreen} from "@/composables/useScreen";
+import AppHeader from "@/components/layout/AppHeader";
+import AppBody from "@/components/layout/AppBody";
+import AppFooter from "@/components/layout/AppFooter";
+import {mapActions} from "vuex";
 export default {
-  components: {ObjsNavbar},
+  components: {AppFooter, AppHeader, AppBody},
   data() {
     return {
       DEBUG: process.env.NODE_ENV === 'development',
@@ -30,14 +33,16 @@ export default {
     }
   },
   computed: {
-
+    ...mapActions(['loadObjsStore', 'loadImagesCSV', 'initFiltersValues']),
   },
   methods: {
 
   },
   mounted() {
-
-      this.setScreenListener();
+    this.$store.dispatch('loadObjsStore');
+    this.$store.dispatch('loadImagesCSV');
+    this.$store.dispatch('initFiltersValues');
+    this.setScreenListener();
   },
   unmounted() {
     this.removeScreenListener();

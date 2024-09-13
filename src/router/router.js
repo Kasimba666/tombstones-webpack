@@ -7,25 +7,25 @@ import ObjsFiltersAndList from '@/components/spatialObjects/ObjsFiltersAndList.v
 
 const routes = [
     {
-        name: 'PgStones',
-        path: '/stones',
-        component: PgStones,
-        children: [
-            {
-                name: 'ObjDetails',
-                path: 'details/:id?',
-                component: ObjDetails,
-            },
-            {
-                name: 'ObjsFiltersAndList',
-                path: 'list',
-                component: ObjsFiltersAndList,
-            },
-        ],
+        name: 'ObjsFiltersAndList',
+        path: '/list',
+        component: ObjsFiltersAndList,
     },
     {
+        name: 'ObjDetails',
+        path: '/details/:id?',
+        component: ObjDetails,
+    },
+    // {
+    //     name: 'PgStones',
+    //     path: '/stones',
+    //     component: PgStones,
+    //     children: [
+    //     ],
+    // },
+    {
         path: '/',
-        redirect: {name: 'PgStones'},
+        redirect: {name: 'ObjsFiltersAndList'},
     },
     // {
     //     name: 'PgSettlements',

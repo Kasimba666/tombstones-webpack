@@ -280,7 +280,7 @@ export default new Vuex.Store({
         },
         detailsGeojsonByID: (state) => (id) => {
             let tempDetails = [];
-            let findedFeature = state.geojson.features.find(v => '' + v.properties.id === '' + id);
+            let findedFeature = state.geojson?.features.find(v => '' + v.properties.id === '' + id);
             if (!findedFeature) return null;
             state.scheme.forEach((item) => {
                 if (item.inDetails === 1) {

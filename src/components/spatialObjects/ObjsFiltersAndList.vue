@@ -74,7 +74,7 @@ export default {
       return tempCols;
     },
     rows() {
-      if (this.filteredGeojson.length > 0) return null;
+      if (!this.filteredGeojson || this.filteredGeojson.length > 0) return null;
       let tempRows = this.filteredGeojson.features.map((feature) => {
         let tempProperties = {};
         this.scheme.forEach((item) => {

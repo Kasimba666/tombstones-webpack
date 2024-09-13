@@ -1,11 +1,12 @@
 <template>
-  <div>
-
+  <div class="AppBody">
+    <router-view/>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'AppBody',
   components: {},
   props: [],
   data() {
@@ -19,5 +20,8 @@ export default {
 </script>
 
 <style lang="scss">
-
+  .AppBody {
+    width: 100%;
+    height: auto;
+  }
 </style>

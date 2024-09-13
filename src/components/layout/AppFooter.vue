@@ -1,11 +1,11 @@
 <template>
-  <div>
-
+  <div class="AppFooter">
   </div>
 </template>
 
 <script>
 export default {
+  name: 'AppFooter',
   components: {},
   props: [],
   data() {
@@ -19,5 +19,7 @@ export default {
 </script>
 
 <style lang="scss">
+.AppFooter {
 
+}
 </style>
