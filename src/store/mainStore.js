@@ -19,6 +19,7 @@ export default new Vuex.Store({
                 inMap: 1,
                 filterType: 'none',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'name',
@@ -30,6 +31,7 @@ export default new Vuex.Store({
                 inMap: 1,
                 filterType: 'input',
                 parentValueFrom: null,
+                sortable: 1,
             },
             {
                 attrName: 'admin',
@@ -41,6 +43,7 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'dropdown',
                 parentValueFrom: null,
+                sortable: 1,
             },
             {
                 attrName: 'local',
@@ -52,6 +55,7 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'dropdown',
                 parentValueFrom: 'admin',
+                sortable: 1,
             },
             {
                 attrName: 'date',
@@ -63,6 +67,7 @@ export default new Vuex.Store({
                 inMap: 1,
                 filterType: 'dropdown',
                 parentValueFrom: null,
+                sortable: 1,
             },
             {
                 attrName: 'front',
@@ -74,6 +79,7 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'dropdown',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'whole',
@@ -85,6 +91,7 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'dropdown',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'place',
@@ -96,6 +103,7 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'dropdown',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'position',
@@ -107,6 +115,7 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'dropdown',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'year',
@@ -118,6 +127,7 @@ export default new Vuex.Store({
                 inMap: 1,
                 filterType: 'dropdown',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'person',
@@ -129,6 +139,7 @@ export default new Vuex.Store({
                 inMap: 1,
                 filterType: 'none',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'sketchfab',
@@ -140,6 +151,7 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'none',
                 parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'coordinates',
@@ -151,11 +163,13 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'none',
                 parentValueFrom: null,
+                sortable: 0,
             },
         ],
         geojson: null,
         imgs: [],
         filtersValues: [],
+        sortingValues: {attrName: 'name', direction: 'asc'},
         currentID: null,
     },
     getters: {
@@ -230,7 +244,7 @@ export default new Vuex.Store({
                     type: state.geojson.type,
                     name: state.geojson.name,
                     crs: state.geojson.crs,
-                    features: newFeatures,
+                    features: newFeatures.sort((a, b) => a.properties[state.sortingValues['attrName']] > b.properties[state.sortingValues['attrName']] ? 1: -1),
                 }
             }
         },
@@ -350,7 +364,10 @@ export default new Vuex.Store({
                 }
             }
         },
-    },
+        sortedGeojson: (state, getters) => {
+            return getters.filteredGeojson.features.sort((a, b) => a.properties[state.sortingValues['attrName']].localeCompare(b.properties[state.sortingValues['attrName']]));
+        },
+},
     mutations: {
         setGeojson(state, v) {
             state.geojson = v
@@ -413,6 +430,6 @@ export default new Vuex.Store({
         },
     },
     modules: {},
-    plugins: [createPersistedState({key: 'spatialObjs', paths: ['filtersValues']})],
+    plugins: [createPersistedState({key: 'spatialObjs', paths: ['filtersValues', 'sortingValues']})],
     namespaced: true,
 })

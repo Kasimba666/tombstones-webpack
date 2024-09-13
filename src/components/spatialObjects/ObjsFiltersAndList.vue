@@ -1,13 +1,22 @@
 <template>
   <div class="ObjsFiltersAndList" :class="{directionColumn: modeShort}">
+<!--    {{sortedGeojson}}-->
     <div class="filters-and-list">
+      <div>
+        <button
+          @click="toogleFiltersShow"
+        >
+          Фильтры
+        </button>
+      </div>
       <ObjsFilters
-          v-if="!!filters && filters.length>0"
+          v-if="!!filters && filters.length>0 && filtersIsShown"
           :filtersValues="filtersValues"
           :filters="filters"
           @onChangeFiltersValues="onChangeFiltersValues"
       />
-      <objs-view-mode-panel
+      <ObjsSorting/>
+      <ObjsViewModePanel
                       v-if="modeShort"
                       :allViewModes="viewModes"
                       :currentViewMode="currentViewMode"
@@ -37,20 +46,22 @@
 
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
-import ObjsList from "@/components/spatialObjects/ObjsList";
 import {useScreen} from '@/composables/useScreen.js'
+import ObjsList from "@/components/spatialObjects/ObjsList";
 import ObjsFilters from "@/components/spatialObjects/ObjsFilters";
 import ObjsMap from "@/components/spatialObjects/ObjsMap";
 import ObjsViewModePanel from "@/components/spatialObjects/ObjsViewModePanel";
+import ObjsSorting from "@/components/spatialObjects/ObjsSorting";
 
 export default {
   name: 'ObjsFiltersAndList',
-  components: {ObjsViewModePanel, ObjsList, ObjsFilters, ObjsMap},
+  components: {ObjsViewModePanel, ObjsList, ObjsFilters, ObjsSorting, ObjsMap},
   props: [],
   data() {
     return {
       viewModes: ['list', 'map'],
       currentViewMode: 'list',
+      filtersIsShown: true,
     }
   },
   setup() {
@@ -62,7 +73,7 @@ export default {
   },
   computed: {
     ...mapState(['filtersValues', 'currentID', 'scheme']),
-    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'sortedGeojson', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID', 'setFiltersValues']),
     cols() {
       let tempCols = [];
@@ -85,7 +96,7 @@ export default {
         tempProperties['imgs'] = this.filteredImagesCards.filter((v) => v['id'].toString() === feature.properties['id'].toString())[0]?.img
         return tempProperties
       });
-      return tempRows.sort((a, b) => a['name'].localeCompare(b['name']));
+      return tempRows;
       // return tempRows.sort((a, b) => a['name'].localeCompare(b['name']));
 
     },
@@ -117,6 +128,9 @@ export default {
     },
     setViewMode(v) {
       this.currentViewMode = v;
+    },
+    toogleFiltersShow() {
+      this.filtersIsShown = !this.filtersIsShown;
     },
   },
   mounted() {

@@ -13,7 +13,7 @@
                  @click="onChangeFiltersValues"
           >
         </template>
-        <div v-if="filter.type === 'dropdown'">
+        <template v-if="filter.type === 'dropdown'">
           <select id="filter_`${f}`" v-model="filtersValues[f].value"
                   @change="onChangeFiltersValues">
             <option :value="null">
@@ -25,7 +25,7 @@
               </template>
             </option>
           </select>
-        </div>
+        </template>
       </div>
     </div>
   </div>
@@ -105,7 +105,6 @@ export default {
     .label-placeholder {
       width: 100px;
       height: auto;
-
     }
 
     .filter-placeholder {

@@ -1,6 +1,4 @@
 import {createRouter, createWebHistory} from 'vue-router';
-import PgStones from '@/views/PgStones.vue';
-// import PgSettlements from '@/views/PgSettlements.vue';
 import PgAbout from '@/views/PgAbout.vue';
 import ObjDetails from '@/components/spatialObjects/ObjDetails.vue';
 import ObjsFiltersAndList from '@/components/spatialObjects/ObjsFiltersAndList.vue';
