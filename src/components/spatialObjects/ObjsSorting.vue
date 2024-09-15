@@ -7,6 +7,7 @@
         id="sorting"
         class="sorting-placeholder"
         v-model="sortingValues.attrName"
+        @change="onChangeSortingValues"
       >
         <option
             v-for="item of scheme.filter(v=>v.sortable === 1)"
@@ -15,24 +16,49 @@
           {{ item.title }}
         </option>
       </select>
+
     </div>
+  </div>
+  <div class radio-block>
+    <input type="radio" id="asc"
+           value="asc"
+           v-model="sortingValues.direction"
+           @change="onChangeSortingValues"
+    />
+    <label for="asc">по возрастанию</label>
+
+    <input type="radio" id="desc"
+           value="desc"
+           v-model="sortingValues.direction"
+           @change="onChangeSortingValues"
+    />
+    <label for="desc">по убыванию</label>
+
   </div>
 </template>
 
 <script>
-import {mapState} from "vuex";
 
 export default {
   name: 'ObjsSorting',
   components: {},
-  props: [],
+  props: {
+    sortingValues: Object,
+    scheme: Array,
+  },
+  emits: ['update:sortingValues', 'onChangeSortingValues'],
   data() {
     return {}
   },
   computed: {
-    ...mapState(['scheme', 'sortingValues']),
+
   },
-  methods: {},
+  methods: {
+    onChangeSortingValues() {
+      this.$emit('update:sortingValues');
+      this.$emit('onChangeSortingValues');
+    },
+  },
   mounted() {
   },
 }

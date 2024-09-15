@@ -85,7 +85,7 @@ export default {
   },
   computed: {
     ...mapState(['currentID', 'scheme']),
-    ...mapGetters(['detailsGeojsonByID', 'detailsImgsByCategoriesByID', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapGetters(['detailsGeojsonByID', 'detailsImgsByCategoriesByID', 'URLQuery', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID']),
     details() {//получить из стора
       return this.detailsGeojsonByID(this.$route.params.id);
@@ -123,7 +123,8 @@ export default {
       this.$router.push({name: 'ObjDetails', params: {id: this.currentID}});
     },
     goBack() {
-      this.$router.push({name: 'ObjsFiltersAndList'});
+      let query=this.URLQuery;
+      this.$router.push({name: 'ObjsFiltersAndList', query: query});
     },
   },
   mounted() {

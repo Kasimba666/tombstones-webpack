@@ -1,6 +1,8 @@
 <template>
+<!--  filtersValues: {{filtersValues}}<br/>-->
+<!--  filters: {{filters}}<br/>-->
   <div class="ObjsFiltersAndList" :class="{directionColumn: modeShort}">
-<!--    {{sortedGeojson}}-->
+<!--    sortingValues: {{sortingValues}}<br/>-->
     <div class="filters-and-list">
       <div>
         <button
@@ -11,11 +13,15 @@
       </div>
       <ObjsFilters
           v-if="!!filters && filters.length>0 && filtersIsShown"
-          :filtersValues="filtersValues"
           :filters="filters"
+          :filtersValues="filtersValues"
           @onChangeFiltersValues="onChangeFiltersValues"
       />
-      <ObjsSorting/>
+      <ObjsSorting
+          :sortingValues="sortingValues"
+          :scheme="scheme"
+          @onChangeSortingValues="onChangeSortingValues"
+      />
       <ObjsViewModePanel
                       v-if="modeShort"
                       :allViewModes="viewModes"
@@ -28,7 +34,7 @@
           :cols="cols"
           :currentID="currentID"
           :modeList="modeList"
-          @clickRow="setCurrentIDFromObjsList"
+          @clickRow="onSetCurrentIDFromObjsList"
       />
       <div/>
     </div>
@@ -38,7 +44,7 @@
           :collectionFeatures="collectionFeaturesForMaps"
           :oneFeature="oneFeatureForMaps"
           :scheme="scheme"
-          @clickPoint="setCurrentIDFromObjsMap"
+          @clickPoint="onSetCurrentIDFromObjsMap"
       />
     </div>
   </div>
@@ -72,9 +78,9 @@ export default {
     }
   },
   computed: {
-    ...mapState(['filtersValues', 'currentID', 'scheme']),
-    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'sortedGeojson', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
-    ...mapMutations(['setCurrentID', 'setFiltersValues']),
+    ...mapState(['filtersValues', 'sortingValues', 'currentID', 'scheme']),
+    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'URLQuery', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapMutations(['setCurrentID', 'setFiltersValues', 'setSortingValues', 'setFromURLQuery']),
     cols() {
       let tempCols = [];
       this.scheme.forEach((item) => {
@@ -108,23 +114,23 @@ export default {
     },
   },
   methods: {
-    setCurrentIDFromObjsList(v) {
+    onSetCurrentIDFromObjsList(v) {
       this.$store.commit('setCurrentID', v);
       this.$router.push({name: 'ObjDetails', params: {id: this.currentID}});
     },
-    setCurrentIDFromObjsMap(v) {
+    onSetCurrentIDFromObjsMap(v) {
       this.$store.commit('setCurrentID', v);
       this.$router.push({name: 'ObjDetails', params: {id: this.currentID}});
     },
-    onChangeFiltersValues(v) {
-      this.$store.commit('setFiltersValues', v);
-      //формируем адресную строку
-      this.$router.push({
-        query: this.filtersValues.reduce((s, v) => {
-          s[v['attrName']] = v['value'];
-          return s;
-        }, {})
-      });
+    onChangeFiltersValues() {
+      this.$store.commit('setFiltersValues', this.filtersValues);
+      let query=this.URLQuery;
+      this.$router.push({query});
+    },
+    onChangeSortingValues() {
+      this.$store.commit('setSortingValues', this.sortingValues);
+      let query=this.URLQuery;
+      this.$router.push({query});
     },
     setViewMode(v) {
       this.currentViewMode = v;
@@ -135,10 +141,7 @@ export default {
   },
   mounted() {
     //извлекаем значения фильтров из адресной строки
-    let filtersValuesFromURL = Object.entries(this.$route.query).map(([key, value]) => {
-      return {attrName: key, value: value}
-    });
-    if (filtersValuesFromURL.length > 0) this.$store.commit('setFiltersValues', filtersValuesFromURL);
+    if (!!this.$route.query) this.$store.commit('setFromURLQuery', this.$route.query);
   },
 }
 </script>

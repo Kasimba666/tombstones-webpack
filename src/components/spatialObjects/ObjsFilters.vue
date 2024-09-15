@@ -14,7 +14,8 @@
           >
         </template>
         <template v-if="filter.type === 'dropdown'">
-          <select id="filter_`${f}`" v-model="filtersValues[f].value"
+          <select id="filter_`${f}`"
+                  v-model="filtersValues[f].value"
                   @change="onChangeFiltersValues">
             <option :value="null">
               (все)
@@ -35,6 +36,7 @@
 <script>
 
 import {useScreen} from "@/composables/useScreen";
+import {mapMutations, mapState} from "vuex";
 
 export default {
   name: 'ObjsFilters',
@@ -43,7 +45,7 @@ export default {
     filtersValues: Array,
     filters: Array,
   },
-  emits: ['onChangeFiltersValues'],
+  emits: ['update:filtersValues', 'onChangeFiltersValues'],
   data() {
     return {
     }
@@ -56,7 +58,6 @@ export default {
     }
   },
   computed: {
-
   },
   methods: {
 
@@ -75,7 +76,8 @@ export default {
     },
 
     onChangeFiltersValues() {
-      this.$emit('onChangeFiltersValues', this.filtersValues);
+      this.$emit('update:filtersValues');
+      this.$emit('onChangeFiltersValues');
     },
   },
   mounted() {

@@ -15,7 +15,7 @@ import {useScreen} from "@/composables/useScreen";
 import AppHeader from "@/components/layout/AppHeader";
 import AppBody from "@/components/layout/AppBody";
 import AppFooter from "@/components/layout/AppFooter";
-import {mapActions} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 export default {
   components: {AppFooter, AppHeader, AppBody},
   data() {
@@ -33,7 +33,8 @@ export default {
     }
   },
   computed: {
-    ...mapActions(['loadObjsStore', 'loadImagesCSV', 'initFiltersValues']),
+    ...mapGetters(['URLQuery']),
+    ...mapActions(['loadObjsStore', 'loadImagesCSV', 'initFiltersValues', 'initSortingValues']),
   },
   methods: {
 
@@ -42,6 +43,9 @@ export default {
     this.$store.dispatch('loadObjsStore');
     this.$store.dispatch('loadImagesCSV');
     this.$store.dispatch('initFiltersValues');
+    this.$store.dispatch('initSortingValues');
+    let query=this.URLQuery;
+    this.$router.push({query});
     this.setScreenListener();
   },
   unmounted() {
