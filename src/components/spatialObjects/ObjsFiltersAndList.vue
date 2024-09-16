@@ -99,7 +99,7 @@ export default {
             tempProperties[item.attrName] = feature.properties[item.attrName];
           }
         });
-        tempProperties['imgs'] = this.filteredImagesCards.filter((v) => v['id'].toString() === feature.properties['id'].toString())[0]?.img
+        tempProperties['imgs'] = this.filteredImagesCards.filter((v) => '' + v['id'] === '' + feature.properties['id'])[0]?.img
         return tempProperties
       });
       return tempRows;

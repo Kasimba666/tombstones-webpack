@@ -41,7 +41,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 1,
             },
@@ -53,7 +53,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: 'admin',
                 sortable: 1,
             },
@@ -65,7 +65,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 1,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 1,
             },
@@ -77,7 +77,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 1,
             },
@@ -89,7 +89,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 1,
             },
@@ -101,7 +101,7 @@ export default new Vuex.Store({
                 inCards: 0,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 0,
             },
@@ -113,7 +113,7 @@ export default new Vuex.Store({
                 inCards: 0,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 0,
             },
@@ -125,7 +125,7 @@ export default new Vuex.Store({
                 inCards: 0,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 0,
             },
@@ -137,7 +137,7 @@ export default new Vuex.Store({
                 inCards: 0,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 0,
             },
@@ -149,7 +149,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 1,
-                filterType: 'dropdown',
+                filterType: 'select',
                 parentValueFrom: null,
                 sortable: 0,
             },
@@ -193,7 +193,7 @@ export default new Vuex.Store({
         geojson: null,
         imgs: [],
         filtersValues: [],
-        sortingValues: {},
+        sortingValues: {attrName: 'name', direction: 'asc'},
         currentID: null,
     },
     getters: {
@@ -209,7 +209,7 @@ export default new Vuex.Store({
                             type: 'input',
                         });
                     }
-                    if (attr.filterType === 'dropdown') {
+                    if (attr.filterType === 'select') {
                         let listValues = [];
                         state.geojson.features.forEach(feature => {
                             if (feature.properties[attr.attrName] != null && feature.properties[attr.attrName] != '' && !listValues.map((v) => {
@@ -232,10 +232,10 @@ export default new Vuex.Store({
                             attrName: attr.attrName,
                             attrParent: attr.parentValueFrom,
                             title: attr.title,
-                            type: 'dropdown',
+                            type: 'select',
                             listValues: listValues.sort()
                         });
-                    }//dropdown
+                    }//select
                 });
                 return newFilters;
             }
@@ -248,7 +248,7 @@ export default new Vuex.Store({
                     let filterPass = true;
                     state.filtersValues.forEach((fV) => {
                         if (!(
-                            ((fV.type === 'dropdown') && ((fV.value === item.properties[fV.attrName]) || (fV.value === null))) ||
+                            ((fV.type === 'select') && ((fV.value === item.properties[fV.attrName]) || (fV.value === null))) ||
                             ((fV.type === 'input') && (fV.value === null) || (fV.value === '')
                                 || ((item.properties[fV.attrName] !== null ? item.properties[fV.attrName] : '').toString().toLowerCase().includes((fV.value !== null ? fV.value : '').toString().toLowerCase(), 0)))
                         )) {
@@ -334,7 +334,8 @@ export default new Vuex.Store({
         },
         currentFeature(state, getters) {
             if (!state.currentID || !getters.filteredGeojson.features || getters.filteredGeojson.features.length === 0 || !getters.filteredGeojson.features[0]) return null;
-            let newFeature = getters.filteredGeojson.features.find(v => v.properties.id.toString() === state.currentID.toString());
+
+            let newFeature = getters.filteredGeojson.features.find(v => ''+v.properties.id.toString() === state.currentID.toString());
             if (!!newFeature) {
                 return {
                     type: getters.filteredGeojson.type,

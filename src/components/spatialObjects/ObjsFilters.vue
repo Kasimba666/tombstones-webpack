@@ -13,7 +13,7 @@
                  @click="onChangeFiltersValues"
           >
         </template>
-        <template v-if="filter.type === 'dropdown'">
+        <template v-if="filter.type === 'select'">
           <select id="filter_`${f}`"
                   v-model="filtersValues[f].value"
                   @change="onChangeFiltersValues">
