@@ -1,7 +1,7 @@
 <template>
   <div class="ObjsMap">
-<!--    oneFeatureForMaps: {{oneFeatureForMaps ?? 'нет'}}<br/>-->
-<!--    collectionFeaturesForMaps: {{collectionFeaturesForMaps?.features.length}}<br/>-->
+<!--    oneFeature: {{oneFeature}}<br/>-->
+<!--    collectionFeatures: {{collectionFeatures}}<br/>-->
     <div id="map" class="map">
       <div id="info"></div>
     </div>
@@ -25,7 +25,6 @@ import {OSM, Vector as VectorSource} from 'ol/source.js';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
 import Overlay from 'ol/Overlay.js';
 import {ScaleLine} from 'ol/control.js';
-import {mapGetters, mapMutations, mapState} from "vuex";
 
 
 const styles = {
@@ -60,11 +59,12 @@ let currentPointFeature = null;
 export default {
   name: 'ObjsMap',
   components: {},
-  props: {
-    scheme: Array,
-    collectionFeatures: Object,
-    oneFeature: Object,
-  },
+  props: ['scheme', 'collectionFeatures', 'oneFeature'],
+  // props: {
+  //   scheme: Array,
+  //   collectionFeatures: Object,
+  //   oneFeature: Object,
+  // },
   emits: ['clickPoint'],
   data() {
     return {
@@ -289,10 +289,10 @@ export default {
         if (lay != null) {
           this.map.removeLayer(lay);
         }
-        if (this.oneFeature !== null) {
+        if (!!this.oneFeature) {
+          console.log('vectorLayerOne:', this.vectorLayerOne);
           this.map.addLayer(this.vectorLayerOne);
           this.map.getView().setCenter(this.centerOne);
-        } else {
         }
       }
     },

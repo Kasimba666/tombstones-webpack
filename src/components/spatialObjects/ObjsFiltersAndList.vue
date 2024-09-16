@@ -1,6 +1,10 @@
 <template>
 <!--  filtersValues: {{filtersValues}}<br/>-->
 <!--  filters: {{filters}}<br/>-->
+<!--  currentID: {{currentID}}<br/>-->
+<!--  currentFeature: {{currentFeature}}<br/>-->
+<!--  oneFeatureForMaps: {{oneFeatureForMaps}}<br/>-->
+
   <div class="ObjsFiltersAndList" :class="{directionColumn: modeShort}">
 <!--    sortingValues: {{sortingValues}}<br/>-->
     <div class="filters-and-list">
@@ -79,7 +83,7 @@ export default {
   },
   computed: {
     ...mapState(['filtersValues', 'sortingValues', 'currentID', 'scheme']),
-    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'URLQuery', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'URLQuery', 'currentFeature', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID', 'setFiltersValues', 'setSortingValues', 'setFromURLQuery']),
     cols() {
       let tempCols = [];

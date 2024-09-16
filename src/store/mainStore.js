@@ -79,12 +79,49 @@ export default new Vuex.Store({
                 inMap: 0,
                 filterType: 'select',
                 parentValueFrom: null,
-                sortable: 1,
+                sortable: 0,
+            },
+            {
+                attrName: 'composite',
+                children: ['depth', 'width', 'height'],
+                title: 'Габариты',
+                inTable: 1,
+                colSize: 1,
+                inCards: 1,
+                inDetails: 1,
+                inMap: 0,
+                filterType: 'none',
+                parentValueFrom: null,
+                sortable: 0,
             },
             {
                 attrName: 'depth',
                 title: 'Глубина',
-                inTable: 1,
+                inTable: 0,
+                colSize: 1,
+                inCards: 1,
+                inDetails: 1,
+                inMap: 0,
+                filterType: 'range',
+                parentValueFrom: null,
+                sortable: 1,
+            },
+            {
+                attrName: 'width',
+                title: 'Ширина',
+                inTable: 0,
+                colSize: 1,
+                inCards: 1,
+                inDetails: 1,
+                inMap: 0,
+                filterType: 'range',
+                parentValueFrom: null,
+                sortable: 1,
+            },
+            {
+                attrName: 'height',
+                title: 'Высота',
+                inTable: 0,
                 colSize: 1,
                 inCards: 1,
                 inDetails: 1,
@@ -202,6 +239,10 @@ export default new Vuex.Store({
             if (!!state.geojson) {
                 let newFilters = [];
                 state.scheme.forEach((attr) => {
+                    if (!state.geojson.features[0].properties.hasOwnProperty(attr.attrName)) {
+                        console.log(attr.attrName);
+                        return
+                    };
                     if (attr.filterType === 'input') {
                         newFilters.push({
                             attrName: attr.attrName,
@@ -408,9 +449,11 @@ export default new Vuex.Store({
                     name: getters.filteredGeojson.name,
                     crs: getters.filteredGeojson.crs,
                     features: newFeatures,
+                    // features: !!getters.oneFeatureForMaps ? newFeatures.filter(v=>v.properties.id !== getters.oneFeatureForMaps.features?.[0].properties?.id) : newFeatures,
                 }
             }
         },
+
         URLQuery(state) {
             let query = {};
             state.filtersValues.forEach((v)=>{if (!!v.value) query[v.attrName] = v.value});
