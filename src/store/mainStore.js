@@ -89,7 +89,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 0,
-                filterType: 'select',
+                filterType: 'range',
                 parentValueFrom: null,
                 sortable: 1,
             },
@@ -236,6 +236,22 @@ export default new Vuex.Store({
                             listValues: listValues.sort()
                         });
                     }//select
+                    if (attr.filterType === 'range') {
+                        let listValues = [];
+                        let allValues=[];
+                        state.geojson.features.forEach((feature)=>{
+                            let value=feature.properties[attr.attrName];
+                            if (!!value) allValues.push(value);
+                        });
+                        listValues.push(Math.min(...allValues));
+                        listValues.push(Math.max(...allValues));
+                        newFilters.push({
+                            attrName: attr.attrName,
+                            title: attr.title,
+                            type: 'range',
+                            listValues: listValues
+                        });
+                    }
                 });
                 return newFilters;
             }
@@ -247,13 +263,18 @@ export default new Vuex.Store({
                     //проверить item на соответствие значениям фильтров
                     let filterPass = true;
                     state.filtersValues.forEach((fV) => {
-                        if (!(
-                            ((fV.type === 'select') && ((fV.value === item.properties[fV.attrName]) || (fV.value === null))) ||
-                            ((fV.type === 'input') && (fV.value === null) || (fV.value === '')
-                                || ((item.properties[fV.attrName] !== null ? item.properties[fV.attrName] : '').toString().toLowerCase().includes((fV.value !== null ? fV.value : '').toString().toLowerCase(), 0)))
-                        )) {
-                            filterPass = false;
+                        if (fV.type === 'select') {
+                            if (!((fV.value === item.properties[fV.attrName]) || (fV.value === null))) filterPass = false;
                         }
+                        if (fV.type === 'range') {
+                            if (!(!fV.value || (fV.value?.[0] <= item.properties[fV.attrName]) && (item.properties[fV.attrName] <= fV.value?.[1]))) filterPass = false;
+                        }
+                        if (fV.type === 'input') {
+                            if (!((fV.value === null) || (fV.value === '') ||
+                                ((item.properties[fV.attrName] !== null ? item.properties[fV.attrName] : '').toString().toLowerCase().includes((fV.value !== null ? fV.value : '').toString().toLowerCase(), 0)))
+) filterPass = false;
+                        }
+
                     });
                     //сформировать отфильтрованный geojson
                     if (filterPass) {
@@ -473,7 +494,7 @@ export default new Vuex.Store({
         },
         initFiltersValues({state, commit, getters}) {
             if (!!getters.filters && state.filtersValues.length===0) {
-                commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, value: null}}));
+                commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, type: item.type, value: null}}));
             }
 
         },

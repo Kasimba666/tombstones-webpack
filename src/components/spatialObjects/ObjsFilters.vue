@@ -27,6 +27,17 @@
             </option>
           </select>
         </template>
+        <template v-if="filter.type === 'range'">
+          {{filter.listValues[0]}}-{{filter.listValues[1]}}
+<!--          {{filter.listValue[0]}}{{filter.listValue[1]}}-->
+<!--            <input type="range"-->
+<!--                   id="filter_`${f}`"-->
+<!--                   v-model="filtersValues[f].value"-->
+<!--                   :min="filter.listValue[0]"-->
+<!--                   :max="filter.listValue[1]"-->
+<!--                   step="1"-->
+<!--            >-->
+        </template>
       </div>
     </div>
   </div>
