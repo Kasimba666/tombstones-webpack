@@ -82,9 +82,9 @@ export default new Vuex.Store({
                 sortable: 0,
             },
             {
-                attrName: 'composite',
-                children: ['depth', 'width', 'height'],
-                title: 'Габариты',
+                attrName: 'sizes',
+                composite: {children: ['depth', 'width', 'height'], delimiter: 'x'},
+                title: 'ГxШxВ, см',
                 inTable: 1,
                 colSize: 1,
                 inCards: 1,
@@ -99,8 +99,8 @@ export default new Vuex.Store({
                 title: 'Глубина',
                 inTable: 0,
                 colSize: 1,
-                inCards: 1,
-                inDetails: 1,
+                inCards: 0,
+                inDetails: 0,
                 inMap: 0,
                 filterType: 'range',
                 parentValueFrom: null,
@@ -111,8 +111,8 @@ export default new Vuex.Store({
                 title: 'Ширина',
                 inTable: 0,
                 colSize: 1,
-                inCards: 1,
-                inDetails: 1,
+                inCards: 0,
+                inDetails: 0,
                 inMap: 0,
                 filterType: 'range',
                 parentValueFrom: null,
@@ -123,8 +123,8 @@ export default new Vuex.Store({
                 title: 'Высота',
                 inTable: 0,
                 colSize: 1,
-                inCards: 1,
-                inDetails: 1,
+                inCards: 0,
+                inDetails: 0,
                 inMap: 0,
                 filterType: 'range',
                 parentValueFrom: null,
@@ -186,7 +186,7 @@ export default new Vuex.Store({
                 inCards: 1,
                 inDetails: 1,
                 inMap: 1,
-                filterType: 'select',
+                filterType: 'none',
                 parentValueFrom: null,
                 sortable: 0,
             },
@@ -305,11 +305,11 @@ export default new Vuex.Store({
                     let filterPass = true;
                     state.filtersValues.forEach((fV) => {
                         if (fV.type === 'select') {
-                            if (!((fV.value === item.properties[fV.attrName]) || (fV.value === null))) filterPass = false;
+                            if (!((fV.value === item.properties[fV.attrName]) || (fV.value === 'all'))) filterPass = false;
                         }
-                        if (fV.type === 'range') {
-                            if (!(!fV.value || (fV.value?.[0] <= item.properties[fV.attrName]) && (item.properties[fV.attrName] <= fV.value?.[1]))) filterPass = false;
-                        }
+//                         if (fV.type === 'range') {
+//                             if (!(!fV.value || (fV.value?.[0] <= item.properties[fV.attrName]) && (item.properties[fV.attrName] <= fV.value?.[1]))) filterPass = false;
+//                         }
                         if (fV.type === 'input') {
                             if (!((fV.value === null) || (fV.value === '') ||
                                 ((item.properties[fV.attrName] !== null ? item.properties[fV.attrName] : '').toString().toLowerCase().includes((fV.value !== null ? fV.value : '').toString().toLowerCase(), 0)))
@@ -385,11 +385,24 @@ export default new Vuex.Store({
             if (!findedFeature) return null;
             state.scheme.forEach((item) => {
                 if (item.inDetails === 1) {
-                    tempDetails.push({
-                        attrName: item.attrName,
-                        titleName: item.title,
-                        value: findedFeature.properties[item.attrName]
-                    });
+                    if (item.hasOwnProperty('composite')) {
+                        let result = [];
+                        item.composite.children.forEach(v=> {if (!!findedFeature.properties[v])
+                            result.push(findedFeature.properties[v])
+                        });
+
+                        tempDetails.push({
+                            attrName: item.attrName,
+                            titleName: item.title,
+                            value: result.join(item.composite.delimiter)
+                        });
+                    } else {
+                        tempDetails.push({
+                            attrName: item.attrName,
+                            titleName: item.title,
+                            value: findedFeature.properties[item.attrName]
+                        });
+                    }
                 }
             });
             return tempDetails
@@ -537,7 +550,8 @@ export default new Vuex.Store({
         },
         initFiltersValues({state, commit, getters}) {
             if (!!getters.filters && state.filtersValues.length===0) {
-                commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, type: item.type, value: null}}));
+                // commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, type: item.type, value: 'all'}}));
+                commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, type: item.type, value: item.type==='range' ? [] : null}}));
             }
 
         },

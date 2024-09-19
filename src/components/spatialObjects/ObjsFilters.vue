@@ -6,26 +6,57 @@
       </div>
       <div class="filter-placeholder">
         <template v-if="filter.type === 'input'">
-          <input id="filter_`${f}`"
-                 v-model="filtersValues[f].value"
-                 :placeholder=filter.title.toLowerCase()
-                 @change="onChangeFiltersValues"
-                 @click="onChangeFiltersValues"
-          >
+<!--          <input id="filter_`${f}`"-->
+<!--                 v-model="filtersValues[f].value"-->
+<!--                 :placeholder=filter.title.toLowerCase()-->
+<!--                 @change="onChangeFiltersValues"-->
+<!--                 @click="onChangeFiltersValues"-->
+<!--          >-->
+          <el-input id="filter_`${f}`"
+              v-model="filtersValues[f].value"
+              style="width: 160px"
+              size="small"
+              @change="onChangeFiltersValues"
+              @input="onChangeFiltersValues"
+          />
+<!--              :placeholder=filter.title.toLowerCase()-->
         </template>
         <template v-if="filter.type === 'select'">
-          <select id="filter_`${f}`"
-                  v-model="filtersValues[f].value"
-                  @change="onChangeFiltersValues">
-            <option :value="null">
+<!--          <select id="filter_`${f}`"-->
+<!--                  v-model="filtersValues[f].value"-->
+<!--                  @change="onChangeFiltersValues">-->
+<!--            <option :value="null">-->
+<!--              (все)-->
+<!--            </option>-->
+<!--            <option v-for="(item, i) of valuesDependentOnParent(filter)"-->
+<!--                    :value="item.value"-->
+<!--                    :key="i">-->
+<!--              <template v-if="true">-->
+<!--                {{ item.value }}-->
+<!--              </template>-->
+<!--            </option>-->
+<!--          </select>-->
+          <el-select id="filter_`${f}`"
+              v-model="filtersValues[f].value"
+              placeholder="Select"
+              size="small"
+              style="width: 160px"
+              @change="onChangeFiltersValues"
+          >
+            <el-option
+                key="all"
+                label="(все)"
+                value="all"
+            >
               (все)
-            </option>
-            <option v-for="(item, i) of valuesDependentOnParent(filter)" :value="item.value" :key="i">
-              <template v-if="true">
-                {{ item.value }}
-              </template>
-            </option>
-          </select>
+            </el-option>
+            <el-option
+                v-for="(item, i) of valuesDependentOnParent(filter)"
+                :key="i"
+                :label="item.value"
+                :value="item.value"
+            />
+          </el-select>
         </template>
         <template v-if="filter.type === 'range'">
           {{filter.listValues[0]}}-{{filter.listValues[1]}}
@@ -73,18 +104,31 @@ export default {
   methods: {
 
     valuesDependentOnParent(f) {
-      if (f.attrParent != null || this.filtersValues.filter((fV) => {if (fV.attrName === f.attrParent) {return fV} })?.[0]?.value === null) {
+      if (f.attrParent != null || this.filtersValues.filter((fV) => {if (fV.attrName === f.attrParent) {return fV} })?.[0]?.value === 'all') {
         let newListValues = f.listValues.filter((v) => {if (this.filtersValues.filter((fV) => { if (fV.attrName === f.attrParent) {return fV } })[0].value === v.parentValue) {return v}});
         let filterValue = this.filtersValues.filter((fV) => {if (fV.attrName === f.attrName) {return fV} })?.[0]?.value;
         //если текущее значение фильтра не null, но не попадает в диапазон допустимых значений из parent, то установить значение null
-        if (filterValue != null) {
+        if (filterValue != 'all') {
           if  (!newListValues.map((v)=>{return v.value}).includes(filterValue)) {this.filtersValues.filter((fV) => {if (fV.attrName === f.attrName) {return fV} })[0].value = null}
         }
-        return newListValues != [] ? newListValues.sort((a, b) => a['value'] > b['value'] ? 1 : -1) : null;
+        return newListValues != [] ? newListValues.sort((a, b) => a['value'] > b['value'] ? 1 : -1) : 'all';
       } else {
-        return f.listValues != [] ? f.listValues.sort((a, b) => a['value'] > b['value'] ? 1 : -1) : null;
+        return f.listValues != [] ? f.listValues.sort((a, b) => a['value'] > b['value'] ? 1 : -1) : 'all';
       }
     },
+    // valuesDependentOnParent(f) {
+    //   if (f.attrParent != null || this.filtersValues.filter((fV) => {if (fV.attrName === f.attrParent) {return fV} })?.[0]?.value === null) {
+    //     let newListValues = f.listValues.filter((v) => {if (this.filtersValues.filter((fV) => { if (fV.attrName === f.attrParent) {return fV } })[0].value === v.parentValue) {return v}});
+    //     let filterValue = this.filtersValues.filter((fV) => {if (fV.attrName === f.attrName) {return fV} })?.[0]?.value;
+    //     //если текущее значение фильтра не null, но не попадает в диапазон допустимых значений из parent, то установить значение null
+    //     if (filterValue != null) {
+    //       if  (!newListValues.map((v)=>{return v.value}).includes(filterValue)) {this.filtersValues.filter((fV) => {if (fV.attrName === f.attrName) {return fV} })[0].value = null}
+    //     }
+    //     return newListValues != [] ? newListValues.sort((a, b) => a['value'] > b['value'] ? 1 : -1) : null;
+    //   } else {
+    //     return f.listValues != [] ? f.listValues.sort((a, b) => a['value'] > b['value'] ? 1 : -1) : null;
+    //   }
+    // },
 
     onChangeFiltersValues() {
       this.$emit('update:filtersValues');

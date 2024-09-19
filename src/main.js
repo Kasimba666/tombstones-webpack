@@ -6,6 +6,8 @@ import store from '@/store/mainStore.js'
 import "bootstrap/dist/js/bootstrap.js"
 import OpenLayersMap from "vue3-openlayers";
 import "vue3-openlayers/styles.css";
+import ElementPlus from 'element-plus';
+import 'element-plus/dist/index.css';
 // createApp(App).mount('#app')
 
 
@@ -13,5 +15,6 @@ const app = createApp(App)
 app
     .use(router)
     .use(store)
+    .use(ElementPlus)
     .use(OpenLayersMap)
     .mount('#app')

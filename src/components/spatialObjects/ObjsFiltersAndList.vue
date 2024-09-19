@@ -1,4 +1,5 @@
 <template>
+<!--  filteredGeojson: {{filteredGeojson}}-->
 <!--  filtersValues: {{filtersValues}}<br/>-->
 <!--  filters: {{filters}}<br/>-->
 <!--  currentID: {{currentID}}<br/>-->
@@ -9,11 +10,12 @@
 <!--    sortingValues: {{sortingValues}}<br/>-->
     <div class="filters-and-list">
       <div>
-        <button
-          @click="toogleFiltersShow"
+        <el-button style="margin-top: 5px"
+            size="small"
+            @click="toogleFiltersShow"
         >
           Фильтры
-        </button>
+        </el-button>
       </div>
       <ObjsFilters
           v-if="!!filters && filters.length>0 && filtersIsShown"
@@ -26,12 +28,14 @@
           :scheme="scheme"
           @onChangeSortingValues="onChangeSortingValues"
       />
-      <ObjsViewModePanel
-                      v-if="modeShort"
-                      :allViewModes="viewModes"
-                      :currentViewMode="currentViewMode"
-                      @setViewMode="setViewMode"
-      />
+      <el-radio-group style="margin-bottom: 5px"
+          v-if="modeShort"
+          v-model="currentViewMode"
+          size="small"
+      >
+        <el-radio-button label="Список" value="list" />
+        <el-radio-button label="Карта" value="map" />
+      </el-radio-group>
       <ObjsList
           v-if="!modeShort || currentViewMode === 'list'"
           :rows="rows"
@@ -60,16 +64,14 @@ import {useScreen} from '@/composables/useScreen.js'
 import ObjsList from "@/components/spatialObjects/ObjsList";
 import ObjsFilters from "@/components/spatialObjects/ObjsFilters";
 import ObjsMap from "@/components/spatialObjects/ObjsMap";
-import ObjsViewModePanel from "@/components/spatialObjects/ObjsViewModePanel";
 import ObjsSorting from "@/components/spatialObjects/ObjsSorting";
 
 export default {
   name: 'ObjsFiltersAndList',
-  components: {ObjsViewModePanel, ObjsList, ObjsFilters, ObjsSorting, ObjsMap},
+  components: {ObjsList, ObjsFilters, ObjsSorting, ObjsMap},
   props: [],
   data() {
     return {
-      viewModes: ['list', 'map'],
       currentViewMode: 'list',
       filtersIsShown: true,
     }
@@ -100,7 +102,15 @@ export default {
         let tempProperties = {};
         this.scheme.forEach((item) => {
           if (item.inTable === 1) {
-            tempProperties[item.attrName] = feature.properties[item.attrName];
+            if (item.hasOwnProperty('composite')) {
+              let result = [];
+              item.composite.children.forEach(v => {
+                if (!!feature.properties[v]) result.push(feature.properties[v]);
+              });
+              tempProperties[item.attrName] = result.join(item.composite.delimiter);
+            } else {
+              tempProperties[item.attrName] = feature.properties[item.attrName];
+            }
           }
         });
         tempProperties['imgs'] = this.filteredImagesCards.filter((v) => '' + v['id'] === '' + feature.properties['id'])[0]?.img
@@ -136,9 +146,9 @@ export default {
       let query=this.URLQuery;
       this.$router.push({query});
     },
-    setViewMode(v) {
-      this.currentViewMode = v;
-    },
+    // setViewMode(v) {
+    //   // this.currentViewMode = v;
+    // },
     toogleFiltersShow() {
       this.filtersIsShown = !this.filtersIsShown;
     },

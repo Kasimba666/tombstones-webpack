@@ -3,37 +3,27 @@
   <div class="ObjsSorting">
     <div class="sorting-block">
       <label for="sorting" class="label-placeholder">Сортировка: </label>
-      <select
-        id="sorting"
-        class="sorting-placeholder"
-        v-model="sortingValues.attrName"
-        @change="onChangeSortingValues"
+      <el-select id="sorting"
+                 v-model="sortingValues.attrName"
+                 placeholder="Select"
+                 size="small"
+                 style="width: 160px"
+                 @change="onChangeSortingValues"
       >
-        <option
+        <el-option
             v-for="item of scheme.filter(v=>v.sortable === 1)"
             :value="item.attrName"
-        >
-          {{ item.title }}
-        </option>
-      </select>
-
+            :label="item.title"
+        />
+      </el-select>
+    <el-radio-group
+        v-model="sortingValues.direction"
+        size="small"
+    >
+      <el-radio-button label="по возрастанию" value="asc" />
+      <el-radio-button label="по убыванию" value="desc" />
+    </el-radio-group>
     </div>
-  </div>
-  <div class radio-block>
-    <input type="radio" id="asc"
-           value="asc"
-           v-model="sortingValues.direction"
-           @change="onChangeSortingValues"
-    />
-    <label for="asc">по возрастанию</label>
-
-    <input type="radio" id="desc"
-           value="desc"
-           v-model="sortingValues.direction"
-           @change="onChangeSortingValues"
-    />
-    <label for="desc">по убыванию</label>
-
   </div>
 </template>
 
@@ -71,10 +61,12 @@ export default {
   padding: 10px;
 
   .sorting-block {
-    width: 270px;
+    width: 100%;
+    //width: 270px;
     display: flex;
     flex-flow: row wrap;
-    justify-content: left;
+    justify-content: start;
+    gap: 5px;
     padding: 3px;
 
     .label-placeholder {
