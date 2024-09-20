@@ -1,10 +1,12 @@
 <template>
 <!--  filteredGeojson: {{filteredGeojson}}-->
+  filteredGeojson length: {{filteredGeojson?.features?.length}}
 <!--  filtersValues: {{filtersValues}}<br/>-->
 <!--  filters: {{filters}}<br/>-->
 <!--  currentID: {{currentID}}<br/>-->
 <!--  currentFeature: {{currentFeature}}<br/>-->
 <!--  oneFeatureForMaps: {{oneFeatureForMaps}}<br/>-->
+  collectionFeaturesForMaps length: {{collectionFeaturesForMaps?.features?.length}}<br/>
 <!--    sortingValues: {{sortingValues}}<br/>-->
 
   <div class="ObjsFiltersAndList" :class="{directionColumn: modeShort}">
@@ -63,7 +65,7 @@
     </div>
     <div class="map">
       <ObjsMapPrevious
-          v-show="!modeShort || currentViewMode === 'map'"
+          v-show="!!collectionFeaturesForMaps && (!modeShort || currentViewMode === 'map')"
           :collectionFeatures="collectionFeaturesForMaps"
           :currentID="currentID"
           :scheme="scheme"

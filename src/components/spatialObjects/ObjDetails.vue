@@ -232,6 +232,7 @@ export default {
   }
 
   .map {
+    //width: 70%;
     width: auto;
     height: 90dvh;
     min-width: 384px;

@@ -15,7 +15,6 @@
           />
         </template>
         <template v-if="filter.type === 'select'">
-
           <el-select id="filter_`${f}`"
               v-model="filtersValues[f].value"
               placeholder="Select"
@@ -39,32 +38,38 @@
           </el-select>
         </template>
         <template v-if="filter.type === 'range'">
-<!--          {{filter.listValues[0]}}-{{filter.listValues[1]}} : {{filtersValues[f].value}}-->
-          <div>
-            <el-input-number
-                v-model="filtersValues[f].value[0]"
-                style="width: 80px"
-                size="small"
-                controls-position="right"
-                :min="filter.listValues[0]"
-                :max="filter.listValues[1]"
-            />
-            <el-input-number
-                v-model="filtersValues[f].value[1]"
-                style="width: 80px"
-                size="small"
-                controls-position="right"
-                :min="filter.listValues[0]"
-                :max="filter.listValues[1]"
-            />
-          </div>
+<!--          {{filter.listValues[0]}}-{{filter.listValues[1]}} : {{filtersValues[f].value.notNull}} {{filtersValues[f].value.range}}-->
+            <el-checkbox v-model="filtersValues[f].value.notNull" label="учитывать" size="small" @change="onChangeFiltersValues"/>
+          <div class="input-items">
+              <div>
+                <el-input-number
+                    v-model="filtersValues[f].value.range[0]"
+                    style="width: 80px"
+                    size="small"
+                    controls-position="right"
+                    :min="filter.listValues[0]"
+                    :max="filter.listValues[1]"
+                    @change="onChangeFiltersValues"
+                />
+                <el-input-number
+                    v-model="filtersValues[f].value.range[1]"
+                    style="width: 80px"
+                    size="small"
+                    controls-position="right"
+                    :min="filter.listValues[0]"
+                    :max="filter.listValues[1]"
+                    @change="onChangeFiltersValues"
+                />
+              </div>
           <el-slider
-              v-model="filtersValues[f].value"
+              v-model="filtersValues[f].value.range"
               range
               size="small"
               :min="filter.listValues[0]"
               :max="filter.listValues[1]"
+              @change="onChangeFiltersValues"
           />
+          </div>
         </template>
       </div>
     </div>
@@ -106,7 +111,7 @@ export default {
         let filterValue = this.filtersValues.filter((fV) => {if (fV.attrName === f.attrName) {return fV} })?.[0]?.value;
         //если текущее значение фильтра не null, но не попадает в диапазон допустимых значений из parent, то установить значение null
         if (filterValue != 'all') {
-          if  (!newListValues.map((v)=>{return v.value}).includes(filterValue)) {this.filtersValues.filter((fV) => {if (fV.attrName === f.attrName) {return fV} })[0].value = null}
+          if  (!newListValues.map((v)=>{return v.value}).includes(filterValue)) {this.filtersValues.filter((fV) => {if (fV.attrName === f.attrName) {return fV} })[0].value = 'all'}
         }
         return newListValues != [] ? newListValues.sort((a, b) => a['value'] > b['value'] ? 1 : -1) : 'all';
       } else {

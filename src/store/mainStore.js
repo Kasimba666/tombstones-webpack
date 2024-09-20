@@ -308,9 +308,9 @@ export default new Vuex.Store({
                         if (fV.type === 'select') {
                             if (!((fV.value === item.properties[fV.attrName]) || (fV.value === 'all'))) filterPass = false;
                         }
-                        if (fV.type === 'range') {
-                            if (!(!fV.value && fV.value.length === 0 || (fV.value?.[0] <= item.properties[fV.attrName]) && (item.properties[fV.attrName] <= fV.value?.[1]))) filterPass = false;
-                        }
+                    if (fV.type === 'range') {
+                        if (!(!fV.value && fV.value.range?.length === 0 || !fV.value.notNull || ((fV.value?.range?.[0] <= item.properties[fV.attrName]) && (item.properties[fV.attrName] <= fV.value?.range?.[1])))) filterPass = false;
+                    }
                         if (fV.type === 'input') {
                             if (!((fV.value === null) || (fV.value === '') ||
                                 ((item.properties[fV.attrName] !== null ? item.properties[fV.attrName] : '').toString().toLowerCase().includes((fV.value !== null ? fV.value : '').toString().toLowerCase(), 0)))
@@ -332,7 +332,6 @@ export default new Vuex.Store({
                     name: state.geojson.name,
                     crs: state.geojson.crs,
                     features: newFeatures.sort((a, b) => (state.sortingValues['direction'] === 'asc' ? 1: -1) * (a.properties[state.sortingValues['attrName']] > b.properties[state.sortingValues['attrName']] ? 1: -1)),
-                    // features: newFeatures.sort((a, b) => a.properties[state.sortingValues['attrName']].localeCompare(b.properties[state.sortingValues['attrName']])),
                 }
             }
         },
@@ -458,13 +457,13 @@ export default new Vuex.Store({
                         geometry: feature.geometry,
                     }
                 });
-                return {
+                return newFeatures.length>0 ? {
                     type: getters.filteredGeojson.type,
                     name: getters.filteredGeojson.name,
                     crs: getters.filteredGeojson.crs,
                     features: newFeatures,
                     // features: !!getters.oneFeatureForMaps ? newFeatures.filter(v=>v.properties.id !== getters.oneFeatureForMaps.features?.[0].properties?.id) : newFeatures,
-                }
+                } : null
             }
         },
 
@@ -559,7 +558,7 @@ export default new Vuex.Store({
                     let newValue = null;
                     if (v.type==='input') newValue = '';
                     if (v.type==='select') newValue = 'all';
-                    if (v.type==='range') newValue = [v.listValues[0], v.listValues[1]];
+                    if (v.type==='range') newValue = {notNull: false, range: [v.listValues[0], v.listValues[1]]};
                     return {attrName: v.attrName, type: v.type, value: newValue}
                 }));
         },

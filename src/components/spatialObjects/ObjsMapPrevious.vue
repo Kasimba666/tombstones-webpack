@@ -2,6 +2,7 @@
   <div class="ObjsMapPrevious">
 <!--    oneFeature: {{oneFeature}}<br/>-->
 <!--    collectionFeatures: {{collectionFeatures}}<br/>-->
+<!--    collectionFeatures length: {{collectionFeatures.features.length}}<br/>-->
     <div id="map" class="map">
       <div id="info"></div>
     </div>
@@ -129,18 +130,18 @@ export default {
       }
     },
     oneFeature() {
-      if (this.currentID === null) return null;
-      return {
+      if (!this.currentID || !this.collectionFeatures) return null;
+      let newFeature = this.collectionFeatures.features.find(v=>v.properties.id===this.currentID);
+      return !!newFeature ? {
         type: this.collectionFeatures.type,
         name: this.collectionFeatures.name,
         crs: this.collectionFeatures.crs,
-        features: [this.collectionFeatures.features.find(v=>v.properties.id===this.currentID)]
-      }
+        features: [newFeature]
+      } : null;
     }
   },
   methods: {
     initMap() {
-      console.log('initMap', !!this.map);
       this.previousCenterOne = this.centerCollection;
       /* Elements that make up the popup.*/
       const container = document.getElementById('popup');
@@ -170,8 +171,8 @@ export default {
           zoom: 9,
         }),
       });
-      this.addCollectionFeatures();
-      this.addOneFeatureLayer();
+      // this.addCollectionFeatures();
+      // this.addOneFeatureLayer();
 //ScaleLine
       let scaleLine = new ScaleLine({units: 'metric', bar: true});
       this.map.addControl(scaleLine);
@@ -259,43 +260,35 @@ export default {
         }
       });
     },
-
     onSetCurrentPoint() {
       this.$emit('clickPoint', currentPointFeature.features[0].properties.id);
     },
-
-    addCollectionFeatures(v) {
-      if (!!this.map) {
-        let lay = null;
-        this.map.getLayers().forEach((layer) => {
-          if (layer.get('name') === 'collection') {
-            lay = layer;
-          }
-        });
-        if (lay !== null) {
-          console.log('collectionFeatures removeLayer');
-          this.map.removeLayer(lay);
+    removeFeaturesByName(name) {
+      let lays = [];
+      this.map.getLayers().forEach(layer=>{
+        if (layer.get('name') === name) {
+          lays.push(layer);
         }
+      });
+      lays.forEach(lay=> {
+        this.map.removeLayer(lay);
+      });
+    },
+    addCollectionFeatures() {
+      if (!!this.map && !!this.collectionFeatures) {
+        this.removeFeaturesByName('collection');
+        //если текущий объект не входит в новую выборку, то удаляем
+        if (!this.collectionFeatures.features.map(v=>v.properties.id).includes(this.currentID)) this.removeFeaturesByName('one');
         if (this.collectionFeatures != null) {
           this.map.addLayer(this.vectorLayerCollection);
           this.map.getView().setCenter(this.centerCollection);
         }
       }
     },
-    addOneFeatureLayer(v) {
-      if (!!this.map) {
-        let lay = null;
-        this.map.getLayers().forEach((layer) => {
-          if (layer.get('name') === 'one') {
-            lay = layer;
-          }
-        });
-        if (lay !== null) {
-          console.log('oneFeature removeLayer');
-          this.map.removeLayer(lay);
-        }
+    addOneFeatureLayer() {
+      if (!!this.map && !!this.oneFeature) {
+        this.removeFeaturesByName('one');
         if (!!this.oneFeature) {
-          console.log(this.oneFeature?.features?.[0].properties?.id);
           this.map.addLayer(this.vectorLayerOne);
           this.map.getView().setCenter(this.centerOne);
         }
@@ -308,7 +301,7 @@ export default {
   },
 
   watch: {
-    collectionFeatures: function (v) {
+    collectionFeatures: function () {
       this.addCollectionFeatures();
     },
     oneFeature: function () {this.addOneFeatureLayer()},
