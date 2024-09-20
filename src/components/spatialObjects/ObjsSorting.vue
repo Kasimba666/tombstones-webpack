@@ -58,7 +58,7 @@ export default {
 .ObjsSorting {
   width: 100%;
   height: auto;
-  padding: 10px;
+  padding: 5px;
 
   .sorting-block {
     width: 100%;
@@ -70,7 +70,7 @@ export default {
     padding: 3px;
 
     .label-placeholder {
-      width: 100px;
+      width: 90px;
       height: auto;
     }
 

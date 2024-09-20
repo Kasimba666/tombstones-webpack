@@ -54,24 +54,25 @@
       </div>
     </div>
     <div class="map">
-      <ObjsMap
+      <ObjsMapPrevious
           :collectionFeatures="collectionFeaturesForMaps"
-          :oneFeature="oneFeatureForMaps"
+          :currentID="currentID"
           :scheme="scheme"
           @clickPoint="setCurrentIDFromObjsMap"
       />
+<!--          :oneFeature="oneFeatureForMaps"-->
     </div>
   </div>
 </template>
 
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
-import ObjsMap from "@/components/spatialObjects/ObjsMap";
+import ObjsMapPrevious from "@/components/spatialObjects/ObjsMapPrevious";
 import {useScreen} from "@/composables/useScreen";
 
 export default {
   name: 'ObjDetails',
-  components: {ObjsMap},
+  components: {ObjsMapPrevious},
   props: [],
   data() {
     return {}

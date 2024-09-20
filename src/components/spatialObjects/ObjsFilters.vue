@@ -6,12 +6,6 @@
       </div>
       <div class="filter-placeholder">
         <template v-if="filter.type === 'input'">
-<!--          <input id="filter_`${f}`"-->
-<!--                 v-model="filtersValues[f].value"-->
-<!--                 :placeholder=filter.title.toLowerCase()-->
-<!--                 @change="onChangeFiltersValues"-->
-<!--                 @click="onChangeFiltersValues"-->
-<!--          >-->
           <el-input id="filter_`${f}`"
               v-model="filtersValues[f].value"
               style="width: 160px"
@@ -19,23 +13,9 @@
               @change="onChangeFiltersValues"
               @input="onChangeFiltersValues"
           />
-<!--              :placeholder=filter.title.toLowerCase()-->
         </template>
         <template v-if="filter.type === 'select'">
-<!--          <select id="filter_`${f}`"-->
-<!--                  v-model="filtersValues[f].value"-->
-<!--                  @change="onChangeFiltersValues">-->
-<!--            <option :value="null">-->
-<!--              (все)-->
-<!--            </option>-->
-<!--            <option v-for="(item, i) of valuesDependentOnParent(filter)"-->
-<!--                    :value="item.value"-->
-<!--                    :key="i">-->
-<!--              <template v-if="true">-->
-<!--                {{ item.value }}-->
-<!--              </template>-->
-<!--            </option>-->
-<!--          </select>-->
+
           <el-select id="filter_`${f}`"
               v-model="filtersValues[f].value"
               placeholder="Select"
@@ -59,15 +39,32 @@
           </el-select>
         </template>
         <template v-if="filter.type === 'range'">
-          {{filter.listValues[0]}}-{{filter.listValues[1]}}
-<!--          {{filter.listValue[0]}}{{filter.listValue[1]}}-->
-<!--            <input type="range"-->
-<!--                   id="filter_`${f}`"-->
-<!--                   v-model="filtersValues[f].value"-->
-<!--                   :min="filter.listValue[0]"-->
-<!--                   :max="filter.listValue[1]"-->
-<!--                   step="1"-->
-<!--            >-->
+<!--          {{filter.listValues[0]}}-{{filter.listValues[1]}} : {{filtersValues[f].value}}-->
+          <div>
+            <el-input-number
+                v-model="filtersValues[f].value[0]"
+                style="width: 80px"
+                size="small"
+                controls-position="right"
+                :min="filter.listValues[0]"
+                :max="filter.listValues[1]"
+            />
+            <el-input-number
+                v-model="filtersValues[f].value[1]"
+                style="width: 80px"
+                size="small"
+                controls-position="right"
+                :min="filter.listValues[0]"
+                :max="filter.listValues[1]"
+            />
+          </div>
+          <el-slider
+              v-model="filtersValues[f].value"
+              range
+              size="small"
+              :min="filter.listValues[0]"
+              :max="filter.listValues[1]"
+          />
         </template>
       </div>
     </div>
@@ -144,12 +141,13 @@ export default {
 .ObjsFilters {
   width: 100%;
   height: auto;
-  padding: 10px;
+  padding: 5px;
   display: flex;
   flex-flow: column wrap;
   justify-content: start;
+
   &.heightLimited {
-    height: 200px;
+    height: 280px;
   };
 
   .filter-block {
@@ -157,11 +155,14 @@ export default {
     display: flex;
     flex-flow: row wrap;
     justify-content: left;
+    gap: 5px;
     padding: 3px;
 
     .label-placeholder {
-      width: 100px;
+      width: 90px;
       height: auto;
+      text-align: left;
+      //margin-right: 10px;
     }
 
     .filter-placeholder {
@@ -170,12 +171,12 @@ export default {
     }
   }
 
-  input, select {
-    //width: 150px;
-    background-color: hsl(180, 100%, 25%, 0.08);
-    width: 100%;
-    cursor: pointer;
-  }
+  //input, select {
+  //  //width: 150px;
+  //  background-color: hsl(180, 100%, 25%, 0.08);
+  //  width: 100%;
+  //  cursor: pointer;
+  //}
 
 }
 

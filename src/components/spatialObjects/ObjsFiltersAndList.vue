@@ -5,16 +5,31 @@
 <!--  currentID: {{currentID}}<br/>-->
 <!--  currentFeature: {{currentFeature}}<br/>-->
 <!--  oneFeatureForMaps: {{oneFeatureForMaps}}<br/>-->
+<!--    sortingValues: {{sortingValues}}<br/>-->
 
   <div class="ObjsFiltersAndList" :class="{directionColumn: modeShort}">
-<!--    sortingValues: {{sortingValues}}<br/>-->
     <div class="filters-and-list">
       <div>
         <el-button style="margin-top: 5px"
             size="small"
             @click="toogleFiltersShow"
         >
-          Фильтры
+          <div style="display: flex; justify-content: space-between; gap: 5px">
+            <el-icon><Operation /></el-icon>
+            <div>Фильтры</div>
+            <el-icon>
+              <CaretBottom v-if="!filtersIsShown" style="font-size: 1em"/>
+              <CaretTop v-else/>
+            </el-icon>
+          </div>
+        </el-button>
+
+        <el-button v-if="filtersIsShown"
+            style="margin-top: 5px"
+            size="small"
+            @click="onResetFiltersValues"
+        >
+          Сбросить значения
         </el-button>
       </div>
       <ObjsFilters
@@ -47,33 +62,40 @@
       <div/>
     </div>
     <div class="map">
-      <ObjsMap
-          v-if="!modeShort || currentViewMode === 'map'"
+      <ObjsMapPrevious
+          v-show="!modeShort || currentViewMode === 'map'"
           :collectionFeatures="collectionFeaturesForMaps"
-          :oneFeature="oneFeatureForMaps"
+          :currentID="currentID"
           :scheme="scheme"
           @clickPoint="onSetCurrentIDFromObjsMap"
       />
+<!--          :oneFeature="oneFeatureForMaps"-->
+<!--      <ObjsMap-->
+<!--          v-if="!modeShort || currentViewMode === 'map'"-->
+<!--          :features="collectionFeaturesForMaps.features"-->
+<!--          :selectedFeatureId="currentID"-->
+<!--      />-->
     </div>
   </div>
 </template>
 
 <script>
-import {mapGetters, mapMutations, mapState} from "vuex";
+import {mapActions, mapGetters, mapMutations, mapState} from "vuex";
 import {useScreen} from '@/composables/useScreen.js'
 import ObjsList from "@/components/spatialObjects/ObjsList";
 import ObjsFilters from "@/components/spatialObjects/ObjsFilters";
-import ObjsMap from "@/components/spatialObjects/ObjsMap";
 import ObjsSorting from "@/components/spatialObjects/ObjsSorting";
+import ObjsMapPrevious from "@/components/spatialObjects/ObjsMapPrevious";
+import ObjsMap from "@/components/spatialObjects/ObjsMap";
 
 export default {
   name: 'ObjsFiltersAndList',
-  components: {ObjsList, ObjsFilters, ObjsSorting, ObjsMap},
+  components: {ObjsList, ObjsFilters, ObjsSorting, ObjsMapPrevious, ObjsMap},
   props: [],
   data() {
     return {
       currentViewMode: 'list',
-      filtersIsShown: true,
+      filtersIsShown: false,
     }
   },
   setup() {
@@ -87,6 +109,7 @@ export default {
     ...mapState(['filtersValues', 'sortingValues', 'currentID', 'scheme']),
     ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'URLQuery', 'currentFeature', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID', 'setFiltersValues', 'setSortingValues', 'setFromURLQuery']),
+    ...mapActions(['clearFiltersValues']),
     cols() {
       let tempCols = [];
       this.scheme.forEach((item) => {
@@ -146,11 +169,12 @@ export default {
       let query=this.URLQuery;
       this.$router.push({query});
     },
-    // setViewMode(v) {
-    //   // this.currentViewMode = v;
-    // },
+
     toogleFiltersShow() {
       this.filtersIsShown = !this.filtersIsShown;
+    },
+    onResetFiltersValues() {
+      this.$store.dispatch('clearFiltersValues');
     },
   },
   mounted() {

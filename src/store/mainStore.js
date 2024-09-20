@@ -94,42 +94,7 @@ export default new Vuex.Store({
                 parentValueFrom: null,
                 sortable: 0,
             },
-            {
-                attrName: 'depth',
-                title: 'Глубина',
-                inTable: 0,
-                colSize: 1,
-                inCards: 0,
-                inDetails: 0,
-                inMap: 0,
-                filterType: 'range',
-                parentValueFrom: null,
-                sortable: 1,
-            },
-            {
-                attrName: 'width',
-                title: 'Ширина',
-                inTable: 0,
-                colSize: 1,
-                inCards: 0,
-                inDetails: 0,
-                inMap: 0,
-                filterType: 'range',
-                parentValueFrom: null,
-                sortable: 1,
-            },
-            {
-                attrName: 'height',
-                title: 'Высота',
-                inTable: 0,
-                colSize: 1,
-                inCards: 0,
-                inDetails: 0,
-                inMap: 0,
-                filterType: 'range',
-                parentValueFrom: null,
-                sortable: 1,
-            },
+
             {
                 attrName: 'front',
                 title: 'Фронт',
@@ -201,6 +166,42 @@ export default new Vuex.Store({
                 filterType: 'none',
                 parentValueFrom: null,
                 sortable: 0,
+            },
+            {
+                attrName: 'depth',
+                title: 'Глубина, см',
+                inTable: 0,
+                colSize: 1,
+                inCards: 0,
+                inDetails: 0,
+                inMap: 0,
+                filterType: 'range',
+                parentValueFrom: null,
+                sortable: 1,
+            },
+            {
+                attrName: 'width',
+                title: 'Ширина, см',
+                inTable: 0,
+                colSize: 1,
+                inCards: 0,
+                inDetails: 0,
+                inMap: 0,
+                filterType: 'range',
+                parentValueFrom: null,
+                sortable: 1,
+            },
+            {
+                attrName: 'height',
+                title: 'Высота, см',
+                inTable: 0,
+                colSize: 1,
+                inCards: 0,
+                inDetails: 0,
+                inMap: 0,
+                filterType: 'range',
+                parentValueFrom: null,
+                sortable: 1,
             },
             {
                 attrName: 'sketchfab',
@@ -307,9 +308,9 @@ export default new Vuex.Store({
                         if (fV.type === 'select') {
                             if (!((fV.value === item.properties[fV.attrName]) || (fV.value === 'all'))) filterPass = false;
                         }
-//                         if (fV.type === 'range') {
-//                             if (!(!fV.value || (fV.value?.[0] <= item.properties[fV.attrName]) && (item.properties[fV.attrName] <= fV.value?.[1]))) filterPass = false;
-//                         }
+                        if (fV.type === 'range') {
+                            if (!(!fV.value && fV.value.length === 0 || (fV.value?.[0] <= item.properties[fV.attrName]) && (item.properties[fV.attrName] <= fV.value?.[1]))) filterPass = false;
+                        }
                         if (fV.type === 'input') {
                             if (!((fV.value === null) || (fV.value === '') ||
                                 ((item.properties[fV.attrName] !== null ? item.properties[fV.attrName] : '').toString().toLowerCase().includes((fV.value !== null ? fV.value : '').toString().toLowerCase(), 0)))
@@ -548,12 +549,19 @@ export default new Vuex.Store({
                 commit('setImgs', newImgs);
             }
         },
-        initFiltersValues({state, commit, getters}) {
+        initFiltersValues({state, getters, dispatch}) {
             if (!!getters.filters && state.filtersValues.length===0) {
-                // commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, type: item.type, value: 'all'}}));
-                commit('setFiltersValues', getters.filters.map((item) => {return {attrName: item.attrName, type: item.type, value: item.type==='range' ? [] : null}}));
+                dispatch('clearFiltersValues');
             }
-
+        },
+        clearFiltersValues({commit, getters}) {
+                commit('setFiltersValues', getters.filters.map((v) => {
+                    let newValue = null;
+                    if (v.type==='input') newValue = '';
+                    if (v.type==='select') newValue = 'all';
+                    if (v.type==='range') newValue = [v.listValues[0], v.listValues[1]];
+                    return {attrName: v.attrName, type: v.type, value: newValue}
+                }));
         },
         initSortingValues({state, commit}) {
             if (Object.keys(state.sortingValues).length===0) commit('setSortingValues', {attrName: 'name', direction: 'asc'});
