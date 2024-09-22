@@ -49,6 +49,7 @@
                     controls-position="right"
                     :min="filter.listValues[0]"
                     :max="filter.listValues[1]"
+                    :disabled="!filtersValues[f].value.notNull"
                     @change="onChangeFiltersValues"
                 />
                 <el-input-number
@@ -58,6 +59,7 @@
                     controls-position="right"
                     :min="filter.listValues[0]"
                     :max="filter.listValues[1]"
+                    :disabled="!filtersValues[f].value.notNull"
                     @change="onChangeFiltersValues"
                 />
               </div>
@@ -67,6 +69,7 @@
               size="small"
               :min="filter.listValues[0]"
               :max="filter.listValues[1]"
+              :disabled="!filtersValues[f].value.notNull"
               @change="onChangeFiltersValues"
           />
           </div>

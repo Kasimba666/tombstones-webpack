@@ -1,12 +1,6 @@
 <template>
   <div class="ObjsMapPrevious" v-show="!!collectionFeatures">
-    ObjsMapPrevious<br/>
-<!--    overlay {{overlay}}<br/>-->
-<!--    currentID: {{currentID}}<br/>-->
-<!--    oneFeature: {{oneFeature}}<br/>-->
-<!--    collectionFeatures: {{collectionFeatures}}<br/>-->
-<!--    collectionFeatures length: {{collectionFeatures.features.length}}<br/>-->
-    <el-button @click="closePopup">Close Popup</el-button>
+<!--    <el-button @click="closePopup">Close Popup</el-button>-->
     <div id="map" class="map">
       <div id="info"></div>
     </div>
@@ -237,7 +231,7 @@ export default {
           this.popupTitle = feature.get('name');
           let content = '';
           Object.entries(this.currentPointFeature.features[0].properties).forEach(([key, value]) => {
-            if (key != 'id' && key != 'name' && value != null && value != '') {
+            if (key !== 'id' && key !== 'name' && value !== null && value !== '') {
               content += '<h8>' + this.scheme.filter(v => {
                 if (v['attrName'] === key) return v
               })[0].title + ': ' + value + '</h8>' + '<br>'
