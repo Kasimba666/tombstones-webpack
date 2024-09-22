@@ -60,7 +60,11 @@
           :scheme="scheme"
           @clickPoint="setCurrentIDFromObjsMap"
       />
-<!--          :oneFeature="oneFeatureForMaps"-->
+<!--      <ObjsMap-->
+<!--          v-show="!!collectionFeaturesForMaps && (!modeShort || currentViewMode === 'map')"-->
+<!--          :collectionFeatures="collectionFeaturesForMaps"-->
+<!--          :currentID="currentID"-->
+<!--      />-->
     </div>
   </div>
 </template>
@@ -69,10 +73,11 @@
 import {mapGetters, mapMutations, mapState} from "vuex";
 import ObjsMapPrevious from "@/components/spatialObjects/ObjsMapPrevious";
 import {useScreen} from "@/composables/useScreen";
+import ObjsMap from "@/components/spatialObjects/ObjsMap";
 
 export default {
   name: 'ObjDetails',
-  components: {ObjsMapPrevious},
+  components: {ObjsMapPrevious, ObjsMap},
   props: [],
   data() {
     return {}

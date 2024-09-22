@@ -1,12 +1,12 @@
 <template>
 <!--  filteredGeojson: {{filteredGeojson}}-->
-  filteredGeojson length: {{filteredGeojson?.features?.length}}
+<!--  filteredGeojson length: {{filteredGeojson?.features?.length}}-->
 <!--  filtersValues: {{filtersValues}}<br/>-->
 <!--  filters: {{filters}}<br/>-->
 <!--  currentID: {{currentID}}<br/>-->
 <!--  currentFeature: {{currentFeature}}<br/>-->
 <!--  oneFeatureForMaps: {{oneFeatureForMaps}}<br/>-->
-  collectionFeaturesForMaps length: {{collectionFeaturesForMaps?.features?.length}}<br/>
+<!--  collectionFeaturesForMaps length: {{collectionFeaturesForMaps?.features?.length}}<br/>-->
 <!--    sortingValues: {{sortingValues}}<br/>-->
 
   <div class="ObjsFiltersAndList" :class="{directionColumn: modeShort}">
@@ -71,11 +71,10 @@
           :scheme="scheme"
           @clickPoint="onSetCurrentIDFromObjsMap"
       />
-<!--          :oneFeature="oneFeatureForMaps"-->
 <!--      <ObjsMap-->
-<!--          v-if="!modeShort || currentViewMode === 'map'"-->
-<!--          :features="collectionFeaturesForMaps.features"-->
-<!--          :selectedFeatureId="currentID"-->
+<!--          v-show="!!collectionFeaturesForMaps && (!modeShort || currentViewMode === 'map')"-->
+<!--          :collectionFeatures="collectionFeaturesForMaps"-->
+<!--          :currentID="currentID"-->
 <!--      />-->
     </div>
   </div>

@@ -1,15 +1,19 @@
 <template>
-  <div class="ObjsMapPrevious">
+  <div class="ObjsMapPrevious" v-show="!!collectionFeatures">
+    ObjsMapPrevious<br/>
+<!--    overlay {{overlay}}<br/>-->
+<!--    currentID: {{currentID}}<br/>-->
 <!--    oneFeature: {{oneFeature}}<br/>-->
 <!--    collectionFeatures: {{collectionFeatures}}<br/>-->
 <!--    collectionFeatures length: {{collectionFeatures.features.length}}<br/>-->
+    <el-button @click="closePopup">Close Popup</el-button>
     <div id="map" class="map">
       <div id="info"></div>
     </div>
     <div id="popup" class="ol-popup">
-      <!--    v-show="!!oneFeature" :key="oneFeature?.features[0].properties.id"-->
       <div class="btns-control-popup">
         <button class="btn-popup-main" @click="onSetCurrentPoint">{{ popupTitle }}</button>
+<!--        <div class="ol-popup-closer" @click="closePopup"></div>-->
         <a href="#" id="popup-closer" class="ol-popup-closer"></a>
       </div>
       <div id="popup-content"></div>
@@ -27,20 +31,14 @@ import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
 import Overlay from 'ol/Overlay.js';
 import {ScaleLine} from 'ol/control.js';
 
-let currentPointFeature = null;
+// let currentPointFeature = null;
 
 export default {
   name: 'ObjsMapPrevious',
   components: {},
   props: ['scheme',
     'collectionFeatures',
-    // 'oneFeature',
     'currentID'],
-  // props: {
-  //   scheme: Array,
-  //   collectionFeatures: Object,
-  //   oneFeature: Object,
-  // },
   emits: ['clickPoint'],
   data() {
     return {
@@ -48,7 +46,8 @@ export default {
       contentPopup: '',
       closer: null,
       popupTitle: '',
-
+      overlay: null,
+      currentPointFeature: null,
     }
   },
   setup() {
@@ -70,12 +69,9 @@ export default {
     };
     const styleFunctionOne = (feature) => {
       return styles['PointOne'];
-      // return styles[feature.getGeometry().getType()];
     };
     const styleFunctionCollection = function (feature) {
-      //выбор стиля в зависимости от содержимого feature
       return styles['PointCollection'];
-      // return styles[feature.getGeometry().getType()];
     };
     return {
       styleFunctionOne,
@@ -114,6 +110,7 @@ export default {
           }),
           name: 'one',
           style: this.styleFunctionOne,
+          zIndex: 1,
         });
       }
     },
@@ -125,7 +122,8 @@ export default {
             })
           }),
           name: 'collection',
-          style: this.styleFunctionCollection
+          style: this.styleFunctionCollection,
+          zIndex: 0,
         });
       }
     },
@@ -142,22 +140,6 @@ export default {
   },
   methods: {
     initMap() {
-      this.previousCenterOne = this.centerCollection;
-      /* Elements that make up the popup.*/
-      const container = document.getElementById('popup');
-      const content_element = document.getElementById('popup-content');
-      const closer = document.getElementById('popup-closer');
-      const overlay = new Overlay({
-        element: container,
-        autoPan: true,
-        offset: [0, -10]
-      });
-      closer.onclick = function () {
-        overlay.setPosition(undefined);
-        this.blur();
-        return false;
-      };
-
       this.map = new Map({
         layers: [
           new TileLayer({
@@ -166,20 +148,27 @@ export default {
         ],
         target: 'map',
         view: new View({
-          // extent: this.bounds,
           center: this.centerCollection,
           zoom: 9,
         }),
       });
-      // this.addCollectionFeatures();
-      // this.addOneFeatureLayer();
 //ScaleLine
-      let scaleLine = new ScaleLine({units: 'metric', bar: true});
-      this.map.addControl(scaleLine);
-
-      if (this.collectionFeatures != null) this.map.addLayer(this.vectorLayerCollection);
-      this.map.addOverlay(overlay);
-
+      this.map.addControl( new ScaleLine({units: 'metric', bar: true}));
+    },
+    initPointer() {
+      //Pointer on hover
+      this.map.on("pointermove", function (evt) {
+        let hit = this.forEachFeatureAtPixel(evt.pixel, function () {
+          return true;
+        });
+        if (hit) {
+          this.getTargetElement().style.cursor = 'pointer';
+        } else {
+          this.getTargetElement().style.cursor = '';
+        }
+      });
+    },
+    initTooltip() {
 //Tooltip
       const info = document.getElementById('info');
       let currentFeature;
@@ -206,14 +195,28 @@ export default {
           info.style.visibility = 'hidden';
         }
         currentFeature = feature;
-
-
       });
       this.map.getTargetElement().addEventListener('pointerleave', function () {
         currentFeature = undefined;
         info.style.visibility = 'hidden';
       });
-
+    },
+    initPopup() {
+      /* Elements that make up the popup.*/
+      const content_element = document.getElementById('popup-content');
+      // const closer = document.getElementById('popup-closer');
+      this.closer = document.getElementById('popup-closer');
+      let overlay = new Overlay({
+        element: document.getElementById('popup'),
+        autoPan: true,
+        offset: [0, -10]
+      });
+      this.map.addOverlay(overlay);
+      this.closer.onclick = function () {
+        overlay.setPosition(undefined);
+        this.blur();
+        return false;
+      };
 //Popup
       this.map.on('click', event => {
         let feature = this.map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
@@ -222,18 +225,18 @@ export default {
         if (feature != null && feature != undefined) {
           let coord = this.map.getCoordinateFromPixel(event.pixel);//Координаты точки как места на карте
           //найти в collectionFeatures сооветствие для feature
-          currentPointFeature = {
+          this.currentPointFeature = {
             type: this.collectionFeatures.type,
             name: this.collectionFeatures.name,
             crs: this.collectionFeatures.crs,
             features: [],
           }
 
-          currentPointFeature.features.push(this.collectionFeatures.features.filter((v) => ''+feature.get('id') === ''+v.properties.id)[0]);
+          this.currentPointFeature.features.push(this.collectionFeatures.features.filter((v) => ''+feature.get('id') === ''+v.properties.id)[0]);
 
           this.popupTitle = feature.get('name');
           let content = '';
-          Object.entries(currentPointFeature.features[0].properties).forEach(([key, value]) => {
+          Object.entries(this.currentPointFeature.features[0].properties).forEach(([key, value]) => {
             if (key != 'id' && key != 'name' && value != null && value != '') {
               content += '<h8>' + this.scheme.filter(v => {
                 if (v['attrName'] === key) return v
@@ -248,20 +251,10 @@ export default {
           }
         }
       });//onclick
-//Pointer on hover
-      this.map.on("pointermove", function (evt) {
-        let hit = this.forEachFeatureAtPixel(evt.pixel, function (feature, layer) {
-          return true;
-        });
-        if (hit) {
-          this.getTargetElement().style.cursor = 'pointer';
-        } else {
-          this.getTargetElement().style.cursor = '';
-        }
-      });
+
     },
     onSetCurrentPoint() {
-      this.$emit('clickPoint', currentPointFeature.features[0].properties.id);
+      this.$emit('clickPoint', this.currentPointFeature.features[0].properties.id);
     },
     removeFeaturesByName(name) {
       let lays = [];
@@ -274,7 +267,8 @@ export default {
         this.map.removeLayer(lay);
       });
     },
-    addCollectionFeatures() {
+    addCollectionFeaturesLayer() {
+      this.closePopup();
       if (!!this.map && !!this.collectionFeatures) {
         this.removeFeaturesByName('collection');
         //если текущий объект не входит в новую выборку, то удаляем
@@ -286,6 +280,7 @@ export default {
       }
     },
     addOneFeatureLayer() {
+      this.closePopup();
       if (!!this.map && !!this.oneFeature) {
         this.removeFeaturesByName('one');
         if (!!this.oneFeature) {
@@ -295,17 +290,29 @@ export default {
 
       }
     },
+    closePopup() {
+      console.log('close Popup');
+      // overlay.setPosition(undefined);
+      this.closer.onclick();
+    },
+
   },
+
   mounted() {
+    console.log('on mount');
     this.initMap();
+    this.initPointer();
+    this.initTooltip();
+    this.initPopup();
+    this.addOneFeatureLayer();
+    this.addCollectionFeaturesLayer();
   },
 
   watch: {
-    collectionFeatures: function () {
-      this.addCollectionFeatures();
-    },
-    oneFeature: function () {this.addOneFeatureLayer()},
+    collectionFeatures: function () {this.addCollectionFeaturesLayer();},
+    currentID: function () {this.addOneFeatureLayer()},
   },
+
 }
 </script>
 
