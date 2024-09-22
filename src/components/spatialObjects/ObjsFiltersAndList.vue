@@ -162,12 +162,12 @@ export default {
     },
     onChangeFiltersValues() {
       this.$store.commit('setFiltersValues', this.filtersValues);
-      let query=this.URLQuery;
+      let query={filters: JSON.stringify(this.URLQuery)};
       this.$router.push({query});
     },
     onChangeSortingValues() {
       this.$store.commit('setSortingValues', this.sortingValues);
-      let query=this.URLQuery;
+      let query={filters: JSON.stringify(this.URLQuery)};
       this.$router.push({query});
     },
 
@@ -180,7 +180,12 @@ export default {
   },
   mounted() {
     //извлекаем значения фильтров из адресной строки
-    if (!!this.$route.query) this.$store.commit('setFromURLQuery', this.$route.query);
+    if (Object.keys(this.$route.query).length>0) {
+      let queryRaw = this.$route.query;
+      this.$store.commit('setFromURLQuery', JSON.parse(queryRaw.filters));
+    }else{
+      this.$store.dispatch('clearFiltersValues');
+    };
   },
 }
 </script>

@@ -285,15 +285,12 @@ export default {
       }
     },
     closePopup() {
-      console.log('close Popup');
-      // overlay.setPosition(undefined);
       this.closer.onclick();
     },
 
   },
 
   mounted() {
-    console.log('on mount');
     this.initMap();
     this.initPointer();
     this.initTooltip();

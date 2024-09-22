@@ -44,8 +44,8 @@ export default {
     this.$store.dispatch('loadImagesCSV');
     this.$store.dispatch('initFiltersValues');
     this.$store.dispatch('initSortingValues');
-    let query=this.URLQuery;
-    this.$router.push({query});
+    // let query= {filters: JSON.stringify(this.URLQuery)};
+    // this.$router.push({query});
     this.setScreenListener();
   },
   unmounted() {

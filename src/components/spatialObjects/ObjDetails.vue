@@ -129,7 +129,7 @@ export default {
       this.$router.push({name: 'ObjDetails', params: {id: this.currentID}});
     },
     goBack() {
-      let query=this.URLQuery;
+      let query={filters: JSON.stringify(this.URLQuery)};
       this.$router.push({name: 'ObjsFiltersAndList', query: query});
     },
   },

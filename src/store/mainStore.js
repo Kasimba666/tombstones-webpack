@@ -495,12 +495,11 @@ export default new Vuex.Store({
         setCurrentID(state, v) {
             state.currentID = v;
         },
-        setFromURLQuery(state, getters, query) {
-            if (!!query && Object.keys(query).length>0) {
-                state.filtersValues.forEach((v) => {if (query.hasOwnProperty(v.attrName)) v.value = query[v.attrName]});
-                console.log(query, query.sortAttrName, query.sortDirection);
-                state.sortingValues.attrName = query.sort[0];
-                state.sortingValues.direction = query.sort[1];
+        setFromURLQuery(state, v) {
+            if (!!v && Object.keys(v).length>0) {
+                state.filtersValues.forEach((w) => {if (v.hasOwnProperty(w.attrName)) w.value = v[w.attrName]});
+                state.sortingValues.attrName = v.sort[0];
+                state.sortingValues.direction = v.sort[1];
 
             } else {
                 //если нет query, то ставим исходные значения
