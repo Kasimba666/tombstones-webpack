@@ -102,7 +102,7 @@ export default {
   },
   computed: {
     ...mapState(['filtersValues', 'sortingValues', 'currentID', 'scheme']),
-    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'URLQuery', 'currentFeature', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'URLQuery', 'getURLQueryJSON', 'currentFeature', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID', 'setFiltersValues', 'setSortingValues', 'setFromURLQuery']),
     ...mapActions(['clearFiltersValues']),
     cols() {
@@ -156,13 +156,17 @@ export default {
     },
     onChangeFiltersValues() {
       this.$store.commit('setFiltersValues', this.filtersValues);
-      let query={filters: JSON.stringify(this.URLQuery)};
-      this.$router.push({query});
+      // let query={filters: JSON.stringify(this.URLQuery)};
+      // console.log('URLQueryJSON', this.URLQueryJSON);
+      // this.$router.push({query});
+      this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
     },
     onChangeSortingValues() {
       this.$store.commit('setSortingValues', this.sortingValues);
-      let query={filters: JSON.stringify(this.URLQuery)};
-      this.$router.push({query});
+      // let query={filters: JSON.stringify(this.URLQuery)};
+      // console.log('URLQueryJSON', this.URLQueryJSON);
+      // this.$router.push({query});
+      this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
     },
 
     toogleFiltersShow() {
@@ -176,7 +180,8 @@ export default {
     //извлекаем значения фильтров из адресной строки
     if (Object.keys(this.$route.query).length>0) {
       let queryRaw = this.$route.query;
-      this.$store.commit('setFromURLQuery', JSON.parse(queryRaw.filters));
+
+      this.$store.commit('setFromURLQuery', queryRaw);
     }else{
       this.$store.dispatch('clearFiltersValues');
     };
@@ -208,6 +213,7 @@ export default {
     height: 90dvh;
     min-width: 384px;
     flex: 1;
+    margin-top: 0px;
   }
 }
 </style>

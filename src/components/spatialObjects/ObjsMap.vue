@@ -318,7 +318,8 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
-    border: 1px solid gray;
+    border: 2px solid hsla(0, 0%, 50%, 0.2);
+    border-radius: 5px;
   }
 
   #map {

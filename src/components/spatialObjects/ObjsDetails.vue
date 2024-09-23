@@ -1,11 +1,21 @@
 <template>
   <div class="ObjsDetails" :class="{directionColumn: modeShort}">
     <div class="details">
-      <button
-          class="btn-close"
+<!--      <button-->
+<!--          class="btn-close"-->
+<!--          @click="goBack"-->
+<!--      >-->
+<!--      </button>-->
+
+        <el-button
+          class="btn-close-new"
+          type="primary"
+          plain
           @click="goBack"
-      >
-      </button>
+        >
+          <el-icon style="font-size: 20px"><CloseBold/></el-icon>
+        </el-button>
+
       <div class="details-properties">
         <div v-for="(detail, i) of details" :key="i">
           <div v-if="!!detail.value && detail.titleName != '3d'">
@@ -85,7 +95,7 @@ export default {
   },
   computed: {
     ...mapState(['currentID', 'scheme']),
-    ...mapGetters(['detailsGeojsonByID', 'detailsImgsByCategoriesByID', 'URLQuery', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapGetters(['detailsGeojsonByID', 'detailsImgsByCategoriesByID', 'URLQuery', 'getURLQueryJSON', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID']),
     details() {//получить из стора
       return this.detailsGeojsonByID(this.$route.params.id);
@@ -123,8 +133,10 @@ export default {
       this.$router.push({name: 'ObjsDetails', params: {id: this.currentID}});
     },
     goBack() {
-      let query={filters: JSON.stringify(this.URLQuery)};
-      this.$router.push({name: 'ObjsFiltersAndList', query: query});
+      // let query={filters: JSON.stringify(this.URLQuery)};
+      // console.log('URLQueryJSON', this.URLQueryJSON);
+      this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
+      // this.$router.push({name: 'ObjsFiltersAndList', query: query});
     },
   },
   mounted() {
@@ -160,6 +172,17 @@ export default {
     border: 1px solid grey;
     background-color: white;
     z-index: 10;
+  }
+  .btn-close-new {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    top: 10px;
+    right: 10px;
+    //font-size: 5px;
+    //border: 1px solid grey;
+    //background-color: white;
+    //z-index: 10;
   }
 
   .details {
@@ -236,6 +259,7 @@ export default {
     height: 90dvh;
     min-width: 384px;
     flex: 1;
+    margin-top: 0px;
   }
 }
 </style>

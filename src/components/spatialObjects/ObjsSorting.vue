@@ -19,6 +19,7 @@
     <el-radio-group
         v-model="sortingValues.direction"
         size="small"
+        @change="onChangeSortingValues"
     >
       <el-radio-button label="по возрастанию" value="asc" />
       <el-radio-button label="по убыванию" value="desc" />

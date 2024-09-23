@@ -59,7 +59,8 @@ export default {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-size: 0.9rem;
+  font-family: apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 0.87rem;
 }
 
 .app {

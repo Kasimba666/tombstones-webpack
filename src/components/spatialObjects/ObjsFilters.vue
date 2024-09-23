@@ -1,5 +1,5 @@
 <template>
-  <div v-if="filtersValues.length>0" class="ObjsFilters" :class="{heightLimited: this.screen.type === 'xl'}">
+  <div class="ObjsFilters" v-if="filtersValues.length>0" :class="{heightLimited: this.screen.type === 'xl'}">
     <div v-for="(filter, f) of filters" :key="f" class="filter-block">
       <div class="label-placeholder">
         <label for="filter_`${f}`">{{ filter.title }}: </label>

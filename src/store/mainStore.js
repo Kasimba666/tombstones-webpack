@@ -476,6 +476,17 @@ export default new Vuex.Store({
             return query;
         },
 
+        getURLQueryJSON(state) {
+            let filters = {};
+            state.filtersValues.forEach((v)=>{if (!!v.value) filters[v.attrName] = v.value});
+            let sortName = state.sortingValues.attrName;
+            let sortDirection = state.sortingValues.direction;
+            let sort={};
+            sort[sortName] = sortDirection;
+            console.log('getURLQueryJSON sort', sort);
+            return {filters: JSON.stringify(filters), sort: JSON.stringify(sort)};
+        },
+
 },
     mutations: {
         setGeojson(state, v) {
@@ -496,16 +507,29 @@ export default new Vuex.Store({
             state.currentID = v;
         },
         setFromURLQuery(state, v) {
-            if (!!v && Object.keys(v).length>0) {
-                state.filtersValues.forEach((w) => {if (v.hasOwnProperty(w.attrName)) w.value = v[w.attrName]});
-                state.sortingValues.attrName = v.sort[0];
-                state.sortingValues.direction = v.sort[1];
-
-            } else {
-                //если нет query, то ставим исходные значения
-                if (Object.keys(state.sortingValues).length===0) state.sortingValues = {attrName: 'name', direction: 'asc'};
-
+            let filters = JSON.parse(v.filters);
+            let sort = JSON.parse(v.sort);
+            // console.log('filters', filters, 'sort', sort);
+            if (!!filters && Object.keys(filters).length>0) {
+                state.filtersValues.forEach((w) => {if (filters.hasOwnProperty(w.attrName)) w.value = filters[w.attrName]});
+            }else{
+            //поставить исходные значения
             }
+            if (!!sort && Object.keys(sort).length>0) {
+                state.sortingValues.attrName = Object.keys(sort)[0];
+                state.sortingValues.direction = Object.values(sort)[0];
+            }else{
+            //поставить исходные значения
+            }
+            // if (!!v && Object.keys(v).length>0) {
+            //     state.filtersValues.forEach((w) => {if (v.hasOwnProperty(w.attrName)) w.value = v[w.attrName]});
+            //     state.sortingValues.attrName = v.sort;
+            //     state.sortingValues.direction = v.sort;
+            //
+            // } else {
+            //     //если нет query, то ставим исходные значения сортировки
+            //     if (Object.keys(state.sortingValues).length===0) state.sortingValues = {attrName: 'name', direction: 'asc'};
+            // }
         },
 
     },
