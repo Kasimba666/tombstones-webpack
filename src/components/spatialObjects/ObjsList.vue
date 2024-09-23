@@ -12,11 +12,6 @@
           </div>
           <div class="obj-card-body">
             <template v-if="!!cols && cols.length>0">
-<!--              <div class="obj-card-image"-->
-<!--                   v-if="(!!imgCardTitle(row))"-->
-<!--                   :style="{backgroundImage: `url(${imgCardTitle(row)})`}"-->
-<!--              >-->
-<!--              </div>-->
               <div class="obj-card-image"
                    v-if="(!!row.imgs && row.imgs.small!='')"
                    :style="{backgroundImage: `url(${row.imgs.small})`}"

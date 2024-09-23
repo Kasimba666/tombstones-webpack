@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
-import fromFileJSON from "@/data/Epigraphy_2024_3857.json";
+import fromFileJSON from "@/data/Epigraphy_2023_3857.json";
 import imagePaths from "raw-loader!@/data/images_tombstones.csv";
 
 const smallImgPath = '300px/';
@@ -483,7 +483,6 @@ export default new Vuex.Store({
             let sortDirection = state.sortingValues.direction;
             let sort={};
             sort[sortName] = sortDirection;
-            console.log('getURLQueryJSON sort', sort);
             return {filters: JSON.stringify(filters), sort: JSON.stringify(sort)};
         },
 

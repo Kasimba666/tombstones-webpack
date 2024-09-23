@@ -108,7 +108,7 @@ export default {
     cols() {
       let tempCols = [];
       this.scheme.forEach((item) => {
-        if (item.inTable === 1) {
+        if (item.inTable === 1 && item.attrName !== 'id') {
           tempCols.push({attrName: item.attrName, titleName: item.title, colSize: item.colSize})
         }
       });
