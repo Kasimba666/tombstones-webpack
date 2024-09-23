@@ -1,5 +1,5 @@
 <template>
-  <div class="ObjDetails" :class="{directionColumn: modeShort}">
+  <div class="ObjsDetails" :class="{directionColumn: modeShort}">
     <div class="details">
       <button
           class="btn-close"
@@ -54,30 +54,24 @@
       </div>
     </div>
     <div class="map">
-      <ObjsMapPrevious
+      <ObjsMap
           :collectionFeatures="collectionFeaturesForMaps"
           :currentID="currentID"
           :scheme="scheme"
           @clickPoint="setCurrentIDFromObjsMap"
       />
-<!--      <ObjsMap-->
-<!--          v-show="!!collectionFeaturesForMaps && (!modeShort || currentViewMode === 'map')"-->
-<!--          :collectionFeatures="collectionFeaturesForMaps"-->
-<!--          :currentID="currentID"-->
-<!--      />-->
     </div>
   </div>
 </template>
 
 <script>
 import {mapGetters, mapMutations, mapState} from "vuex";
-import ObjsMapPrevious from "@/components/spatialObjects/ObjsMapPrevious";
-import {useScreen} from "@/composables/useScreen";
 import ObjsMap from "@/components/spatialObjects/ObjsMap";
+import {useScreen} from "@/composables/useScreen";
 
 export default {
-  name: 'ObjDetails',
-  components: {ObjsMapPrevious, ObjsMap},
+  name: 'ObjsDetails',
+  components: {ObjsMap},
   props: [],
   data() {
     return {}
@@ -126,7 +120,7 @@ export default {
   methods: {
     setCurrentIDFromObjsMap(v) {
       this.$store.commit('setCurrentID', v);
-      this.$router.push({name: 'ObjDetails', params: {id: this.currentID}});
+      this.$router.push({name: 'ObjsDetails', params: {id: this.currentID}});
     },
     goBack() {
       let query={filters: JSON.stringify(this.URLQuery)};
@@ -146,7 +140,7 @@ export default {
 </script>
 
 <style lang="scss">
-.ObjDetails {
+.ObjsDetails {
   position: relative;
   width: 100%;
   display: flex;

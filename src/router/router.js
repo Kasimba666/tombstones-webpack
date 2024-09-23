@@ -1,6 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router';
 import PgAbout from '@/views/PgAbout.vue';
-import ObjDetails from '@/components/spatialObjects/ObjDetails.vue';
+import ObjsDetails from '@/components/spatialObjects/ObjsDetails.vue';
 import ObjsFiltersAndList from '@/components/spatialObjects/ObjsFiltersAndList.vue';
 
 const routes = [
@@ -10,9 +10,9 @@ const routes = [
         component: ObjsFiltersAndList,
     },
     {
-        name: 'ObjDetails',
+        name: 'ObjsDetails',
         path: '/details/:id?',
-        component: ObjDetails,
+        component: ObjsDetails,
     },
     // {
     //     name: 'PgStones',

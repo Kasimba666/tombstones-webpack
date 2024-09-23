@@ -64,18 +64,13 @@
       <div/>
     </div>
     <div class="map">
-      <ObjsMapPrevious
+      <ObjsMap
           v-show="!!collectionFeaturesForMaps && (!modeShort || currentViewMode === 'map')"
           :collectionFeatures="collectionFeaturesForMaps"
           :currentID="currentID"
           :scheme="scheme"
           @clickPoint="onSetCurrentIDFromObjsMap"
       />
-<!--      <ObjsMap-->
-<!--          v-show="!!collectionFeaturesForMaps && (!modeShort || currentViewMode === 'map')"-->
-<!--          :collectionFeatures="collectionFeaturesForMaps"-->
-<!--          :currentID="currentID"-->
-<!--      />-->
     </div>
   </div>
 </template>
@@ -86,12 +81,11 @@ import {useScreen} from '@/composables/useScreen.js'
 import ObjsList from "@/components/spatialObjects/ObjsList";
 import ObjsFilters from "@/components/spatialObjects/ObjsFilters";
 import ObjsSorting from "@/components/spatialObjects/ObjsSorting";
-import ObjsMapPrevious from "@/components/spatialObjects/ObjsMapPrevious";
 import ObjsMap from "@/components/spatialObjects/ObjsMap";
 
 export default {
   name: 'ObjsFiltersAndList',
-  components: {ObjsList, ObjsFilters, ObjsSorting, ObjsMapPrevious, ObjsMap},
+  components: {ObjsList, ObjsFilters, ObjsSorting, ObjsMap},
   props: [],
   data() {
     return {
@@ -154,11 +148,11 @@ export default {
   methods: {
     onSetCurrentIDFromObjsList(v) {
       this.$store.commit('setCurrentID', v);
-      this.$router.push({name: 'ObjDetails', params: {id: this.currentID}});
+      this.$router.push({name: 'ObjsDetails', params: {id: this.currentID}});
     },
     onSetCurrentIDFromObjsMap(v) {
       this.$store.commit('setCurrentID', v);
-      this.$router.push({name: 'ObjDetails', params: {id: this.currentID}});
+      this.$router.push({name: 'ObjsDetails', params: {id: this.currentID}});
     },
     onChangeFiltersValues() {
       this.$store.commit('setFiltersValues', this.filtersValues);

@@ -1,7 +1,16 @@
 <template>
-  <div class="ObjsMap" v-if="!!collectionFeatures && collectionFeatures?.features?.length>0">
+  <div class="ObjsMap" v-show="!!collectionFeatures">
+<!--    <el-button @click="closePopup">Close Popup</el-button>-->
     <div id="map" class="map">
       <div id="info"></div>
+    </div>
+    <div id="popup" class="ol-popup">
+      <div class="btns-control-popup">
+        <button class="btn-popup-main" @click="onSetCurrentPoint">{{ popupTitle }}</button>
+<!--        <div class="ol-popup-closer" @click="closePopup"></div>-->
+        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+      </div>
+      <div id="popup-content"></div>
     </div>
   </div>
 </template>
@@ -14,16 +23,25 @@ import {Circle as CircleStyle, Fill, Stroke, Style} from 'ol/style.js';
 import {OSM, Vector as VectorSource} from 'ol/source.js';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
 import Overlay from 'ol/Overlay.js';
-import {ElPopover} from "element-plus";
+import {ScaleLine} from 'ol/control.js';
+
+// let currentPointFeature = null;
 
 export default {
   name: 'ObjsMap',
-  components: {'el-popover': ElPopover},
-  props: ['collectionFeatures', 'currentID'],
+  components: {},
+  props: ['scheme',
+    'collectionFeatures',
+    'currentID'],
   emits: ['clickPoint'],
   data() {
     return {
       map: null,
+      contentPopup: '',
+      closer: null,
+      popupTitle: '',
+      overlay: null,
+      currentPointFeature: null,
     }
   },
   setup() {
@@ -43,10 +61,10 @@ export default {
         }),
       }),
     };
-    const styleFunctionOne = () => {
+    const styleFunctionOne = (feature) => {
       return styles['PointOne'];
     };
-    const styleFunctionCollection = () => {
+    const styleFunctionCollection = function (feature) {
       return styles['PointCollection'];
     };
     return {
@@ -86,6 +104,7 @@ export default {
           }),
           name: 'one',
           style: this.styleFunctionOne,
+          zIndex: 1,
         });
       }
     },
@@ -97,7 +116,8 @@ export default {
             })
           }),
           name: 'collection',
-          style: this.styleFunctionCollection
+          style: this.styleFunctionCollection,
+          zIndex: 0,
         });
       }
     },
@@ -113,9 +133,6 @@ export default {
     }
   },
   methods: {
-    // getFeatureColor(feature) {// Возвращаем цвет объекта: красный — если не выбран, чёрный — если выбран
-    //   return feature.get('id') === this.selectedFeatureId ? 'black' : 'red';
-    // },
     initMap() {
       this.map = new Map({
         layers: [
@@ -129,8 +146,109 @@ export default {
           zoom: 9,
         }),
       });
-      this.addOneFeatureLayer();
-      this.addCollectionFeatures();
+//ScaleLine
+      this.map.addControl( new ScaleLine({units: 'metric', bar: true}));
+    },
+    initPointer() {
+      //Pointer on hover
+      this.map.on("pointermove", function (evt) {
+        let hit = this.forEachFeatureAtPixel(evt.pixel, function () {
+          return true;
+        });
+        if (hit) {
+          this.getTargetElement().style.cursor = 'pointer';
+        } else {
+          this.getTargetElement().style.cursor = '';
+        }
+      });
+    },
+    initTooltip() {
+//Tooltip
+      const info = document.getElementById('info');
+      let currentFeature;
+      this.map.on('pointermove', function (evt) {
+        if (evt.dragging) {
+          info.style.visibility = 'hidden';
+          currentFeature = undefined;
+          return;
+        }
+        const pixel = this.getEventPixel(evt.originalEvent);
+        const feature = evt.originalEvent.target.closest('.ol-control')
+            ? undefined
+            : this.forEachFeatureAtPixel(pixel, function (feature) {
+              return feature;
+            });
+        if (feature) {
+          info.style.left = 10 + pixel[0] + 'px';
+          info.style.top = pixel[1] + 'px';
+          if (feature !== currentFeature) {
+            info.style.visibility = 'visible';
+            info.innerText = feature.get('name');
+          }
+        } else {
+          info.style.visibility = 'hidden';
+        }
+        currentFeature = feature;
+      });
+      this.map.getTargetElement().addEventListener('pointerleave', function () {
+        currentFeature = undefined;
+        info.style.visibility = 'hidden';
+      });
+    },
+    initPopup() {
+      /* Elements that make up the popup.*/
+      const content_element = document.getElementById('popup-content');
+      // const closer = document.getElementById('popup-closer');
+      this.closer = document.getElementById('popup-closer');
+      let overlay = new Overlay({
+        element: document.getElementById('popup'),
+        autoPan: true,
+        offset: [0, -10]
+      });
+      this.map.addOverlay(overlay);
+      this.closer.onclick = function () {
+        overlay.setPosition(undefined);
+        this.blur();
+        return false;
+      };
+//Popup
+      this.map.on('click', event => {
+        let feature = this.map.forEachFeatureAtPixel(event.pixel, function (feature, layer) {
+          return feature;
+        });
+        if (feature != null && feature != undefined) {
+          let coord = this.map.getCoordinateFromPixel(event.pixel);//Координаты точки как места на карте
+          //найти в collectionFeatures сооветствие для feature
+          this.currentPointFeature = {
+            type: this.collectionFeatures.type,
+            name: this.collectionFeatures.name,
+            crs: this.collectionFeatures.crs,
+            features: [],
+          }
+
+          this.currentPointFeature.features.push(this.collectionFeatures.features.filter((v) => ''+feature.get('id') === ''+v.properties.id)[0]);
+
+          this.popupTitle = feature.get('name');
+          let content = '';
+          Object.entries(this.currentPointFeature.features[0].properties).forEach(([key, value]) => {
+            if (key !== 'id' && key !== 'name' && value !== null && value !== '') {
+              content += '<h8>' + this.scheme.filter(v => {
+                if (v['attrName'] === key) return v
+              })[0].title + ': ' + value + '</h8>' + '<br>'
+            }
+          });
+
+          if (content != '') {
+            this.contentPopup = content;
+            content_element.innerHTML = content;
+            overlay.setPosition(coord);
+          }
+        }
+      });//onclick
+
+    },
+    onSetCurrentPoint() {
+      this.$emit('clickPoint', this.currentPointFeature.features[0].properties.id);
     },
     removeFeaturesByName(name) {
       let lays = [];
@@ -143,7 +261,8 @@ export default {
         this.map.removeLayer(lay);
       });
     },
-    addCollectionFeatures() {
+    addCollectionFeaturesLayer() {
+      this.closePopup();
       if (!!this.map && !!this.collectionFeatures) {
         this.removeFeaturesByName('collection');
         //если текущий объект не входит в новую выборку, то удаляем
@@ -155,6 +274,7 @@ export default {
       }
     },
     addOneFeatureLayer() {
+      this.closePopup();
       if (!!this.map && !!this.oneFeature) {
         this.removeFeaturesByName('one');
         if (!!this.oneFeature) {
@@ -164,20 +284,31 @@ export default {
 
       }
     },
+    closePopup() {
+      this.closer.onclick();
+    },
+
   },
+
   mounted() {
     this.initMap();
+    this.initPointer();
+    this.initTooltip();
+    this.initPopup();
+    this.addOneFeatureLayer();
+    this.addCollectionFeaturesLayer();
   },
+
   watch: {
-    collectionFeatures: function () {
-      this.addCollectionFeatures();
-    },
-    oneFeature: function () {this.addOneFeatureLayer()},
+    collectionFeatures: function () {this.addCollectionFeaturesLayer();},
+    currentID: function () {this.addOneFeatureLayer()},
   },
+
 }
 </script>
 
 <style lang="scss">
+
 .ObjsMap {
   position: relative;
   width: 100%;
@@ -193,5 +324,95 @@ export default {
   #map {
     position: relative;
   }
+
+  #info {
+    position: absolute;
+    display: inline-block;
+    height: auto;
+    width: auto;
+    z-index: 100;
+    background-color: hsl(0, 0%, 100%, 0.8);
+    color: #333;
+    text-align: left;
+    border-radius: 4px;
+    padding: 5px;
+    left: 50%;
+    transform: translateX(3%);
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  .ol-popup {
+    position: absolute;
+    background-color: hsl(0, 0%, 100%, 0.8);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 5px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    width: auto;
+    min-width: 100px;
+
+  }
+
+  .ol-popup:after, .ol-popup:before {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+
+  .ol-popup:after {
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
+  }
+
+  .ol-popup:before {
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
+  }
+
+  .ol-popup-closer:after {
+    content: "✖";
+  }
+
+  .ol-popup-closer {
+    position: relative;
+    text-decoration: none;
+  }
+
+  .btns-control-popup {
+    position: relative;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .btn-popup-main {
+      height: auto;
+      width: auto;
+      border: 1px solid hsl(0, 0%, 80%);
+      border-radius: 5px;
+      text-align: left;
+      word-break: normal;
+      padding-left: 3px;
+      padding-right: 3px;
+
+      &:hover {
+        box-shadow: 0 0 10px 3px rgba(0, 140, 186, 0.5);
+      }
+    }
+
+
+  }
+
 }
 </style>
