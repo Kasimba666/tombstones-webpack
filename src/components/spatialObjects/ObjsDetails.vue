@@ -144,7 +144,7 @@ export default {
       alert('Указан неверный адрес: ' + this.$route.path);
       this.goBack();
     } else {
-      this.$store.commit('setCurrentID', +this.$route.params.id);
+      this.$store.commit('setCurrentID', +this.$route.params.id.toString());
 
     }
   },

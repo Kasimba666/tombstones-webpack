@@ -232,7 +232,7 @@ export default new Vuex.Store({
         imgs: [],
         filtersValues: [],
         sortingValues: {attrName: 'name', direction: 'asc'},
-        currentID: null,
+        currentID: '',
     },
     getters: {
         //фильтры построены на основе схемы, справочники для фильтров берутся из полного набора данных соответствующего раздела схемы
@@ -416,7 +416,7 @@ export default new Vuex.Store({
                     type: getters.filteredGeojson.type,
                     name: getters.filteredGeojson.name,
                     crs: getters.filteredGeojson.crs,
-                    features: [getters.filteredGeojson.features.find(v => v.properties.id.toString() === state.currentID.toString())],
+                    features: [getters.filteredGeojson.features.find(v => v.properties.id === state.currentID)],
                 }
             } else {
                 return null
@@ -503,7 +503,7 @@ export default new Vuex.Store({
 
         },
         setCurrentID(state, v) {
-            state.currentID = v;
+            state.currentID = v.toString();
         },
         setFromURLQuery(state, v) {
             let filters = JSON.parse(v.filters);
@@ -545,6 +545,10 @@ export default new Vuex.Store({
                         })),
                         geometry: v.geometry,
                     }
+                });
+                //перевести все id к string
+                newGeojson.features.forEach(v=>{
+                    v.properties.id = v.properties.id.toString()
                 });
                 commit('setGeojson', newGeojson);
             } catch (e) {

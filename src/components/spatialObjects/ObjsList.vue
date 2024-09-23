@@ -74,7 +74,7 @@ export default {
   components: {},
   props: {
     // currentRow: Object,
-    currentID: Number,
+    currentID: String,
     rows: Array,
     cols: Array,
     modeList: String,
