@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import fromFileJSON from "@/data/Epigraphy_2023_3857.json";
 import imagePaths from "raw-loader!@/data/images_tombstones.csv";
+// import imagePaths from "raw-loader!@/data/images_emty.csv";
 
 const smallImgPath = '300px/';
 const largeImgPath = 'large/';

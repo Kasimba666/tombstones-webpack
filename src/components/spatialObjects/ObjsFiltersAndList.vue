@@ -1,15 +1,5 @@
 <template>
-<!--  filteredGeojson: {{filteredGeojson}}-->
-<!--  filteredGeojson length: {{filteredGeojson?.features?.length}}-->
-<!--  filtersValues: {{filtersValues}}<br/>-->
-<!--  filters: {{filters}}<br/>-->
-<!--  currentID: {{currentID}}<br/>-->
-<!--  currentFeature: {{currentFeature}}<br/>-->
-<!--  oneFeatureForMaps: {{oneFeatureForMaps}}<br/>-->
-<!--  collectionFeaturesForMaps length: {{collectionFeaturesForMaps?.features?.length}}<br/>-->
-<!--    sortingValues: {{sortingValues}}<br/>-->
-
-  <div class="ObjsFiltersAndList" :class="{directionColumn: modeShort}">
+  <div class="ObjsFiltersAndList" :class="{directionColumn: (!allowShortMode || modeShort)}">
     <div class="filters-and-list">
       <div>
         <el-button style="margin-top: 5px"
@@ -25,7 +15,6 @@
             </el-icon>
           </div>
         </el-button>
-
         <el-button v-if="filtersIsShown"
             style="margin-top: 5px"
             size="small"
@@ -46,7 +35,7 @@
           @onChangeSortingValues="onChangeSortingValues"
       />
       <el-radio-group style="margin-bottom: 5px"
-          v-if="modeShort"
+          v-if="!allowShortMode || modeShort"
           v-model="currentViewMode"
           size="small"
       >
@@ -54,7 +43,7 @@
         <el-radio-button label="Карта" value="map" />
       </el-radio-group>
       <ObjsList
-          v-if="!modeShort || currentViewMode === 'list'"
+          v-if="(allowShortMode && !modeShort) || currentViewMode === 'list'"
           :rows="rows"
           :cols="cols"
           :currentID="currentID"
@@ -65,7 +54,7 @@
     </div>
     <div class="map">
       <ObjsMap
-          v-show="!!collectionFeaturesForMaps && (!modeShort || currentViewMode === 'map')"
+          v-show="!!collectionFeaturesForMaps && ((allowShortMode && !modeShort) || currentViewMode === 'map')"
           :collectionFeatures="collectionFeaturesForMaps"
           :currentID="currentID"
           :scheme="scheme"
@@ -89,6 +78,7 @@ export default {
   props: [],
   data() {
     return {
+      allowShortMode: false, //true - разрешить использование карточек вместо таблицы, располагать list и map в горизонтальной последовательности
       currentViewMode: 'list',
       filtersIsShown: false,
     }
@@ -139,7 +129,8 @@ export default {
 
     },
     modeList() {
-      return this.modeShort ? 'cards' : 'table'
+      // return this.modeShort ? 'cards' : 'table'
+      return !!this.allowShortMode && this.modeShort ? 'cards' : 'table'
     },
     modeShort() {
       return this.screen.type === 'xs' || this.screen.type === 'sm'

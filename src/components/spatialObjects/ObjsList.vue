@@ -121,14 +121,19 @@ export default {
 
 <style lang="scss">
 .ObjsList {
+  width: 100%;
+  //height: 80dvh;
+  //overflow-x: scroll;
   .objs-table {
     position: relative;
     width: 100%;
+    //width: 2000px;
     height: auto;
     display: flex;
     flex-flow: column nowrap;
     justify-content: start;
     border: 1px solid hsla(0, 0%, 50%, 0.8);
+
   }
 
   .obj-title {
@@ -179,9 +184,7 @@ export default {
 
   .obj-cell {
     position: relative;
-    //width: 100px;
     height: auto;
-    //min-width: 50px;
     display: flex;
 
     padding: 2px;
@@ -262,8 +265,6 @@ export default {
           flex: 1 1 auto;
           width: 80px;
           height: 120px;
-          //min-width: 10px;
-          //min-height: 20px;
           background-color: white;
           border-radius: 2px;
           background-size: contain;
