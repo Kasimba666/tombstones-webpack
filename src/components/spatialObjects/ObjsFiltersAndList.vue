@@ -29,7 +29,7 @@
           :filtersValues="filtersValues"
           @onChangeFiltersValues="onChangeFiltersValues"
       />
-      <ObjsSorting
+      <ObjsSorting v-if="Object.keys(sortingValues).length>0"
           :sortingValues="sortingValues"
           :scheme="scheme"
           @onChangeSortingValues="onChangeSortingValues"
@@ -53,13 +53,13 @@
       <div/>
     </div>
     <div class="map">
-      <ObjsMap
-          v-show="!!collectionFeaturesForMaps && ((allowShortMode && !modeShort) || currentViewMode === 'map')"
-          :collectionFeatures="collectionFeaturesForMaps"
-          :currentID="currentID"
-          :scheme="scheme"
-          @clickPoint="onSetCurrentIDFromObjsMap"
-      />
+<!--      <ObjsMap-->
+<!--          v-show="!!collectionFeaturesForMaps && ((allowShortMode && !modeShort) || currentViewMode === 'map')"-->
+<!--          :collectionFeatures="collectionFeaturesForMaps"-->
+<!--          :currentID="currentID"-->
+<!--          :scheme="scheme"-->
+<!--          @clickPoint="onSetCurrentIDFromObjsMap"-->
+<!--      />-->
     </div>
   </div>
 </template>
@@ -94,7 +94,7 @@ export default {
     ...mapState(['filtersValues', 'sortingValues', 'currentID', 'scheme']),
     ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'getURLQueryJSON', 'currentFeature', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID', 'setFiltersValues', 'setSortingValues', 'setFromURLQuery']),
-    ...mapActions(['initFiltersValues', 'initSortingValues']),
+    ...mapActions(['initFiltersValues','clearFiltersValues' , 'initSortingValues']),
     cols() {
       let tempCols = [];
       this.scheme.forEach((item) => {
@@ -164,24 +164,34 @@ export default {
       this.filtersIsShown = !this.filtersIsShown;
     },
     onResetFiltersValues() {
-      this.$store.dispatch('initFiltersValues');
+      this.$store.dispatch('clearFiltersValues');
+      this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
     },
   },
   mounted() {
-    //извлекаем значения фильтров из адресной строки
-    if (Object.keys(this.$route.query).length>0) {
-      let queryRaw = this.$route.query;
-      if (Object.keys(JSON.parse(queryRaw['order'])).length===0) {
-        this.$store.dispatch('initSortingValues');
-        this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
-        return
-      };
-      this.$store.commit('setFromURLQuery', queryRaw);
-
-    }else{
-      this.$store.dispatch('initFiltersValues');
-      this.$store.dispatch('initSortingValues');
-    };
+    //извлекаем значения фильтров  и сортировки из адресной строки
+    // if (Object.keys(this.$route.query).length>0) {
+    //   let queryRaw = this.$route.query;
+    //   console.log(queryRaw['order']);
+    //   if (Object.keys(JSON.parse(queryRaw['order'])).length===0) {
+    //     this.$store.dispatch('initSortingValues');
+    //     this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
+    //     return
+    //   };
+    //   this.$store.commit('setFromURLQuery', queryRaw);
+    //
+    // }else{
+    //   this.$store.dispatch('initFiltersValues');
+    //   this.$store.dispatch('initSortingValues');
+    // };
+    // let queryRaw = this.$route.query;
+    // if (!!queryRaw) {
+    //   this.$store.commit('setFromURLQuery', queryRaw);
+    // }else{
+    //   this.$store.dispatch('initFiltersValues');
+    //   this.$store.dispatch('initSortingValues');
+    //   //сделать push query
+    // };
   },
 }
 </script>

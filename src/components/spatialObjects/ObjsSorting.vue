@@ -1,6 +1,5 @@
 <template>
-<!--  {{ sortingValues }}-->
-  <div class="ObjsSorting">
+  <div class="ObjsSorting" v-if="Object.keys(sortingValues).length>0">
     <div class="sorting-block">
       <label for="sorting" class="label-placeholder">Сортировка: </label>
       <el-select id="sorting"

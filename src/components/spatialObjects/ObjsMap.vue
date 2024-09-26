@@ -1,4 +1,5 @@
 <template>
+  map: {{map ?? 'no map'}}
   <div class="ObjsMap" v-show="!!collectionFeatures">
 <!--    <el-button @click="closePopup">Close Popup</el-button>-->
     <div id="map" class="map">
@@ -106,10 +107,7 @@ export default {
     vectorLayerOne() {
       if (!!this.oneFeature) {
         return new VectorLayer({
-          source: new VectorSource({
-            features: new GeoJSON().readFeatures(this.oneFeature, {
-            })
-          }),
+          source: new VectorSource({features: new GeoJSON().readFeatures(this.oneFeature, {})}),
           name: 'one',
           style: this.styleFunctionOne,
           zIndex: 1,
@@ -287,6 +285,7 @@ export default {
         this.removeFeaturesByName('one');
         if (!!this.oneFeature) {
           this.map.addLayer(this.vectorLayerOne);
+          // console.log('vectorLayerOne', this.vectorLayerOne);
           this.map.getView().setCenter(this.centerOne);
         }
 
@@ -295,22 +294,24 @@ export default {
     closePopup() {
       this.closer.onclick();
     },
-    addGeofeaturesLayers() {
-
-    },
-
-    vectorLayerGeofeature(geofeature) {
-      if (!!geofeature) {
-        return new VectorLayer({
-          source: new VectorSource({
-            features: new GeoJSON().readFeatures(geofeature, {})
-          }),
-          name: geofeature.name,
-          style: this.styleFunctionPolygon,
-          zIndex: 0
-        });
-      }
-    },
+    // addGeofeaturesLayers() {
+    //   if (!!this.map && !!this.geofeatures.length>0) {
+    //     this.geofeatures.forEach(geofeature=>{
+    //
+    //       let newVectorLayer = new VectorLayer({
+    //         source: new VectorSource({features: new GeoJSON().readFeatures(geofeature, {})}),
+    //         name: geofeature.name,
+    //         style: ()=>{return new Style({
+    //           fill: new Fill({color: 'red'}),
+    //           stroke: new Stroke({color: 'blue', width: 2}),
+    //         })},
+    //         zIndex: 0
+    //       });
+    //       // console.log(newVectorLayer);
+    //       this.map.addLayer(newVectorLayer);
+    //     });
+    //   }
+    // },
 
   },
 
@@ -321,7 +322,7 @@ export default {
     this.initPopup();
     this.addOneFeatureLayer();
     this.addCollectionFeaturesLayer();
-
+    // this.addGeofeaturesLayers();
   },
 
   watch: {

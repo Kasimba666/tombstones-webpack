@@ -38,11 +38,16 @@
         </div>
         <div class="sketchfab-embed-wrapper"
              v-if="!!details && sketchfabLink != null">
-          <iframe allowfullscreen mozallowfullscreen="true"
-                  webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking
-                  execution-while-out-of-viewport execution-while-not-rendered web-share
+          <iframe allowfullscreen
+                  mozallowfullscreen="true"
+                  webkitallowfullscreen="true"
+                  xr-spatial-tracking
+                  execution-while-out-of-viewport
+                  execution-while-not-rendered
+                  web-share
                   :src="sketchfabLink">
           </iframe>
+<!--                  allow="autoplay; fullscreen; xr-spatial-tracking"-->
         </div>
       </div>
       <div class="other-images">
@@ -64,12 +69,12 @@
       </div>
     </div>
     <div class="map">
-      <ObjsMap
-          :collectionFeatures="collectionFeaturesForMaps"
-          :currentID="currentID"
-          :scheme="scheme"
-          @clickPoint="setCurrentIDFromObjsMap"
-      />
+<!--      <ObjsMap-->
+<!--          :collectionFeatures="collectionFeaturesForMaps"-->
+<!--          :currentID="currentID"-->
+<!--          :scheme="scheme"-->
+<!--          @clickPoint="setCurrentIDFromObjsMap"-->
+<!--      />-->
     </div>
   </div>
 </template>
