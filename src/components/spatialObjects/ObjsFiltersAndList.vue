@@ -78,7 +78,7 @@ export default {
   props: [],
   data() {
     return {
-      allowShortMode: false, //true - разрешить использование карточек вместо таблицы, располагать list и map в горизонтальной последовательности
+      allowShortMode: true, //true - разрешить использование карточек вместо таблицы, располагать list и map в горизонтальной последовательности
       currentViewMode: 'list',
       filtersIsShown: false,
     }
@@ -92,9 +92,9 @@ export default {
   },
   computed: {
     ...mapState(['filtersValues', 'sortingValues', 'currentID', 'scheme']),
-    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'URLQuery', 'getURLQueryJSON', 'currentFeature', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapGetters(['filteredGeojson', 'filteredImagesCards', 'filters', 'getURLQueryJSON', 'currentFeature', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID', 'setFiltersValues', 'setSortingValues', 'setFromURLQuery']),
-    ...mapActions(['clearFiltersValues']),
+    ...mapActions(['initFiltersValues', 'initSortingValues']),
     cols() {
       let tempCols = [];
       this.scheme.forEach((item) => {
@@ -164,17 +164,23 @@ export default {
       this.filtersIsShown = !this.filtersIsShown;
     },
     onResetFiltersValues() {
-      this.$store.dispatch('clearFiltersValues');
+      this.$store.dispatch('initFiltersValues');
     },
   },
   mounted() {
     //извлекаем значения фильтров из адресной строки
     if (Object.keys(this.$route.query).length>0) {
       let queryRaw = this.$route.query;
-
+      if (Object.keys(JSON.parse(queryRaw['order'])).length===0) {
+        this.$store.dispatch('initSortingValues');
+        this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
+        return
+      };
       this.$store.commit('setFromURLQuery', queryRaw);
+
     }else{
-      this.$store.dispatch('clearFiltersValues');
+      this.$store.dispatch('initFiltersValues');
+      this.$store.dispatch('initSortingValues');
     };
   },
 }

@@ -95,7 +95,7 @@ export default {
   },
   computed: {
     ...mapState(['currentID', 'scheme']),
-    ...mapGetters(['detailsGeojsonByID', 'detailsImgsByCategoriesByID', 'URLQuery', 'getURLQueryJSON', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
+    ...mapGetters(['detailsGeojsonByID', 'detailsImgsByCategoriesByID', 'getURLQueryJSON', 'oneFeatureForMaps', 'collectionFeaturesForMaps']),
     ...mapMutations(['setCurrentID']),
     details() {//получить из стора
       return this.detailsGeojsonByID(this.$route.params.id);

@@ -24,8 +24,7 @@ import {OSM, Vector as VectorSource} from 'ol/source.js';
 import {Tile as TileLayer, Vector as VectorLayer} from 'ol/layer.js';
 import Overlay from 'ol/Overlay.js';
 import {ScaleLine} from 'ol/control.js';
-
-// let currentPointFeature = null;
+import {mapState} from "vuex";
 
 export default {
   name: 'ObjsMap',
@@ -60,6 +59,10 @@ export default {
           stroke: new Stroke({color: 'black', width: 2}),
         }),
       }),
+      'Polygon': new Style({
+        fill: new Fill({color: 'red'}),
+        stroke: new Stroke({color: 'blue', width: 2}),
+      }),
     };
     const styleFunctionOne = (feature) => {
       return styles['PointOne'];
@@ -67,12 +70,17 @@ export default {
     const styleFunctionCollection = function (feature) {
       return styles['PointCollection'];
     };
+    const styleFunctionPolygon = function (feature) {
+      return styles['Polygon'];
+    };
     return {
       styleFunctionOne,
-      styleFunctionCollection
+      styleFunctionCollection,
+      styleFunctionPolygon
     }
   },
   computed: {
+    ...mapState(['geofeatures']),
     bounds() {
       if (!!this.collectionFeatures && this.collectionFeatures['features'].length > 0) {
         let coordinates = this.collectionFeatures['features'].map(v => {
@@ -287,6 +295,22 @@ export default {
     closePopup() {
       this.closer.onclick();
     },
+    addGeofeaturesLayers() {
+
+    },
+
+    vectorLayerGeofeature(geofeature) {
+      if (!!geofeature) {
+        return new VectorLayer({
+          source: new VectorSource({
+            features: new GeoJSON().readFeatures(geofeature, {})
+          }),
+          name: geofeature.name,
+          style: this.styleFunctionPolygon,
+          zIndex: 0
+        });
+      }
+    },
 
   },
 
@@ -297,6 +321,7 @@ export default {
     this.initPopup();
     this.addOneFeatureLayer();
     this.addCollectionFeaturesLayer();
+
   },
 
   watch: {

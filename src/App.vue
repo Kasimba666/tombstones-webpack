@@ -33,8 +33,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['URLQuery']),
-    ...mapActions(['loadObjsStore', 'loadImagesCSV', 'initFiltersValues', 'initSortingValues']),
+    ...mapActions(['loadObjsStore', 'loadImagesCSV', 'initGeofeatures', 'initFiltersValues', 'initSortingValues']),
   },
   methods: {
 
@@ -44,6 +43,7 @@ export default {
     this.$store.dispatch('loadImagesCSV');
     this.$store.dispatch('initFiltersValues');
     this.$store.dispatch('initSortingValues');
+    this.$store.dispatch('initGeofeatures');
     // let query= {filters: JSON.stringify(this.URLQuery)};
     // this.$router.push({query});
     this.setScreenListener();

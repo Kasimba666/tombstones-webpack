@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 import fromFileJSON from "@/data/Epigraphy_2023_3857.json";
 import imagePaths from "raw-loader!@/data/images_tombstones.csv";
+import fromFileBorder from "@/data/border_pgm_3857.json";
 // import imagePaths from "raw-loader!@/data/images_emty.csv";
 
 const smallImgPath = '300px/';
@@ -234,6 +235,7 @@ export default new Vuex.Store({
         filtersValues: [],
         sortingValues: {attrName: 'name', direction: 'asc'},
         currentID: '',
+        geofeatures: [],
     },
     getters: {
         //фильтры построены на основе схемы, справочники для фильтров берутся из полного набора данных соответствующего раздела схемы
@@ -468,23 +470,14 @@ export default new Vuex.Store({
             }
         },
 
-        URLQuery(state) {
-            let query = {};
-            state.filtersValues.forEach((v)=>{if (!!v.value) query[v.attrName] = v.value});
-            query['sort'] = [];
-            query['sort'].push(state.sortingValues.attrName);
-            query['sort'].push(state.sortingValues.direction);
-            return query;
-        },
-
         getURLQueryJSON(state) {
             let filters = {};
             state.filtersValues.forEach((v)=>{if (!!v.value) filters[v.attrName] = v.value});
             let sortName = state.sortingValues.attrName;
             let sortDirection = state.sortingValues.direction;
-            let sort={};
-            sort[sortName] = sortDirection;
-            return {filters: JSON.stringify(filters), sort: JSON.stringify(sort)};
+            let order={};
+            order[sortName] = sortDirection;
+            return {filters: JSON.stringify(filters), order: JSON.stringify(order)};
         },
 
 },
@@ -508,28 +501,24 @@ export default new Vuex.Store({
         },
         setFromURLQuery(state, v) {
             let filters = JSON.parse(v.filters);
-            let sort = JSON.parse(v.sort);
+            let order = JSON.parse(v.order);
             // console.log('filters', filters, 'sort', sort);
             if (!!filters && Object.keys(filters).length>0) {
                 state.filtersValues.forEach((w) => {if (filters.hasOwnProperty(w.attrName)) w.value = filters[w.attrName]});
             }else{
             //поставить исходные значения
             }
-            if (!!sort && Object.keys(sort).length>0) {
-                state.sortingValues.attrName = Object.keys(sort)[0];
-                state.sortingValues.direction = Object.values(sort)[0];
+            if (!!order && Object.keys(order).length>0) {
+                state.sortingValues.attrName = Object.keys(order)[0];
+                state.sortingValues.direction = Object.values(order)[0];
             }else{
             //поставить исходные значения
+                console.log('setFromURLQuery нет значений сортировки');
+                state.sortingValues = {attrName: 'name', direction: 'asc'};
             }
-            // if (!!v && Object.keys(v).length>0) {
-            //     state.filtersValues.forEach((w) => {if (v.hasOwnProperty(w.attrName)) w.value = v[w.attrName]});
-            //     state.sortingValues.attrName = v.sort;
-            //     state.sortingValues.direction = v.sort;
-            //
-            // } else {
-            //     //если нет query, то ставим исходные значения сортировки
-            //     if (Object.keys(state.sortingValues).length===0) state.sortingValues = {attrName: 'name', direction: 'asc'};
-            // }
+        },
+        addGeofeature(state, v) {
+            state.geofeatures.push(v);
         },
 
     },
@@ -575,12 +564,8 @@ export default new Vuex.Store({
                 commit('setImgs', newImgs);
             }
         },
-        initFiltersValues({state, getters, dispatch}) {
+        initFiltersValues({state, getters, commit}) {
             if (!!getters.filters && state.filtersValues.length===0) {
-                dispatch('clearFiltersValues');
-            }
-        },
-        clearFiltersValues({commit, getters}) {
                 commit('setFiltersValues', getters.filters.map((v) => {
                     let newValue = null;
                     if (v.type==='input') newValue = '';
@@ -588,12 +573,21 @@ export default new Vuex.Store({
                     if (v.type==='range') newValue = {notNull: false, range: [v.listValues[0], v.listValues[1]]};
                     return {attrName: v.attrName, type: v.type, value: newValue}
                 }));
+            }
         },
+
         initSortingValues({state, commit}) {
             if (Object.keys(state.sortingValues).length===0) commit('setSortingValues', {attrName: 'name', direction: 'asc'});
         },
+        initGeofeatures({commit}) {
+            try {
+                commit('addGeofeature', fromFileBorder);
+            } catch (e) {
+                alert('Ошибка загрузки файла');
+            }
+        },
     },
     modules: {},
-    plugins: [createPersistedState({key: 'spatialObjs', paths: ['filtersValues', 'sortingValues']})],
+    // plugins: [createPersistedState({key: 'spatialObjs', paths: ['filtersValues', 'sortingValues']})],
     namespaced: true,
 })
