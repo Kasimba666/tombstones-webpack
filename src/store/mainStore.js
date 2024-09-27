@@ -4,7 +4,7 @@ import createPersistedState from 'vuex-persistedstate';
 import fromFileJSON from "@/data/Epigraphy_2023_3857.json";
 import imagePaths from "raw-loader!@/data/images_tombstones.csv";
 import fromFileBorder from "@/data/border_pgm_3857.json";
-// import imagePaths from "raw-loader!@/data/images_emty.csv";
+// import imagePaths from "raw-loader!@/data/images_empty.csv";
 
 const smallImgPath = '300px/';
 const largeImgPath = 'large/';
@@ -510,7 +510,7 @@ export default new Vuex.Store({
 
         },
         setCurrentID(state, v) {
-            state.currentID = !!v?v.toString:null;
+            state.currentID = v;
         },
         setFromURLQuery(state, v) {
             let filters = JSON.parse(v.filters);

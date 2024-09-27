@@ -53,13 +53,13 @@
       <div/>
     </div>
     <div class="map">
-<!--      <ObjsMap-->
-<!--          v-show="!!collectionFeaturesForMaps && ((allowShortMode && !modeShort) || currentViewMode === 'map')"-->
-<!--          :collectionFeatures="collectionFeaturesForMaps"-->
-<!--          :currentID="currentID"-->
-<!--          :scheme="scheme"-->
-<!--          @clickPoint="onSetCurrentIDFromObjsMap"-->
-<!--      />-->
+      <ObjsMap
+          v-show="!!collectionFeaturesForMaps && ((allowShortMode && !modeShort) || currentViewMode === 'map')"
+          :collectionFeatures="collectionFeaturesForMaps"
+          :currentID="currentID"
+          :scheme="scheme"
+          @clickPoint="onSetCurrentIDFromObjsMap"
+      />
     </div>
   </div>
 </template>
@@ -169,21 +169,20 @@ export default {
     },
   },
   mounted() {
-    //извлекаем значения фильтров  и сортировки из адресной строки
-    // if (Object.keys(this.$route.query).length>0) {
-    //   let queryRaw = this.$route.query;
-    //   console.log(queryRaw['order']);
-    //   if (Object.keys(JSON.parse(queryRaw['order'])).length===0) {
-    //     this.$store.dispatch('initSortingValues');
-    //     this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
-    //     return
-    //   };
-    //   this.$store.commit('setFromURLQuery', queryRaw);
-    //
-    // }else{
-    //   this.$store.dispatch('initFiltersValues');
-    //   this.$store.dispatch('initSortingValues');
-    // };
+    //извлекаем значения фильтров и сортировки из адресной строки
+    if (Object.keys(this.$route.query).length>0) {
+      let queryRaw = this.$route.query;
+      if (Object.keys(JSON.parse(queryRaw['order'])).length===0) {
+        this.$store.dispatch('initSortingValues');
+        this.$router.push({name: 'ObjsFiltersAndList', query: this.getURLQueryJSON});
+        return
+      };
+      this.$store.commit('setFromURLQuery', queryRaw);
+
+    }else{
+      this.$store.dispatch('initFiltersValues');
+      this.$store.dispatch('initSortingValues');
+    };
     // let queryRaw = this.$route.query;
     // if (!!queryRaw) {
     //   this.$store.commit('setFromURLQuery', queryRaw);

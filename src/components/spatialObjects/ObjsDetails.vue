@@ -69,12 +69,12 @@
       </div>
     </div>
     <div class="map">
-<!--      <ObjsMap-->
-<!--          :collectionFeatures="collectionFeaturesForMaps"-->
-<!--          :currentID="currentID"-->
-<!--          :scheme="scheme"-->
-<!--          @clickPoint="setCurrentIDFromObjsMap"-->
-<!--      />-->
+      <ObjsMap
+          :collectionFeatures="collectionFeaturesForMaps"
+          :currentID="currentID"
+          :scheme="scheme"
+          @clickPoint="setCurrentIDFromObjsMap"
+      />
     </div>
   </div>
 </template>
@@ -149,7 +149,7 @@ export default {
       alert('Указан неверный адрес: ' + this.$route.path);
       this.goBack();
     } else {
-      this.$store.commit('setCurrentID', +this.$route.params.id.toString());
+      this.$store.commit('setCurrentID', this.$route.params.id.toString());
 
     }
   },

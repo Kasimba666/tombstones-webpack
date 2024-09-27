@@ -1,5 +1,5 @@
 <template>
-  map: {{map ?? 'no map'}}
+<!--  map: {{map ?? 'no map'}}-->
   <div class="ObjsMap" v-show="!!collectionFeatures">
 <!--    <el-button @click="closePopup">Close Popup</el-button>-->
     <div id="map" class="map">
@@ -61,7 +61,6 @@ export default {
         }),
       }),
       'Polygon': new Style({
-        fill: new Fill({color: 'red'}),
         stroke: new Stroke({color: 'blue', width: 2}),
       }),
     };
@@ -110,7 +109,7 @@ export default {
           source: new VectorSource({features: new GeoJSON().readFeatures(this.oneFeature, {})}),
           name: 'one',
           style: this.styleFunctionOne,
-          zIndex: 1,
+          zIndex: 10,
         });
       }
     },
@@ -123,7 +122,20 @@ export default {
           }),
           name: 'collection',
           style: this.styleFunctionCollection,
-          zIndex: 0,
+          zIndex: 5,
+        });
+      }
+    },
+    vectorLayerBorder() {
+      if (!!this.geofeatures[0]) {
+        return new VectorLayer({
+          source: new VectorSource({
+            features: new GeoJSON().readFeatures(this.geofeatures[0], {
+            })
+          }),
+          name: 'border',
+          style: this.styleFunctionPolygon,
+          zIndex: 1,
         });
       }
     },
@@ -231,23 +243,25 @@ export default {
             crs: this.collectionFeatures.crs,
             features: [],
           }
+          let filteredFeature = this.collectionFeatures.features.filter((v) => feature.get('id') === v.properties.id)[0];
+          if (!!filteredFeature) {
+            this.currentPointFeature.features.push(filteredFeature);
+            this.popupTitle = feature.get('name');
+            let content = '';
+            // Object.entries(this.currentPointFeature.features[0].properties).forEach(([key, value]) => {
+            Object.entries(filteredFeature.properties).forEach(([key, value]) => {
+              if (key !== 'id' && key !== 'name' && value !== null && value !== '') {
+                content += '<h8>' + this.scheme.filter(v => {
+                  if (v['attrName'] === key) return v
+                })[0].title + ': ' + value + '</h8>' + '<br>'
+              }
+            });
 
-          this.currentPointFeature.features.push(this.collectionFeatures.features.filter((v) => ''+feature.get('id') === ''+v.properties.id)[0]);
-
-          this.popupTitle = feature.get('name');
-          let content = '';
-          Object.entries(this.currentPointFeature.features[0].properties).forEach(([key, value]) => {
-            if (key !== 'id' && key !== 'name' && value !== null && value !== '') {
-              content += '<h8>' + this.scheme.filter(v => {
-                if (v['attrName'] === key) return v
-              })[0].title + ': ' + value + '</h8>' + '<br>'
+            if (content != '') {
+              this.contentPopup = content;
+              content_element.innerHTML = content;
+              overlay.setPosition(coord);
             }
-          });
-
-          if (content != '') {
-            this.contentPopup = content;
-            content_element.innerHTML = content;
-            overlay.setPosition(coord);
           }
         }
       });//onclick
@@ -285,33 +299,19 @@ export default {
         this.removeFeaturesByName('one');
         if (!!this.oneFeature) {
           this.map.addLayer(this.vectorLayerOne);
-          // console.log('vectorLayerOne', this.vectorLayerOne);
           this.map.getView().setCenter(this.centerOne);
         }
 
       }
     },
+    addGeofeaturesLayers() {
+      if (!!this.map && !!this.geofeatures[0]) {
+        this.map.addLayer(this.vectorLayerBorder);
+      }
+    },
     closePopup() {
       this.closer.onclick();
     },
-    // addGeofeaturesLayers() {
-    //   if (!!this.map && !!this.geofeatures.length>0) {
-    //     this.geofeatures.forEach(geofeature=>{
-    //
-    //       let newVectorLayer = new VectorLayer({
-    //         source: new VectorSource({features: new GeoJSON().readFeatures(geofeature, {})}),
-    //         name: geofeature.name,
-    //         style: ()=>{return new Style({
-    //           fill: new Fill({color: 'red'}),
-    //           stroke: new Stroke({color: 'blue', width: 2}),
-    //         })},
-    //         zIndex: 0
-    //       });
-    //       // console.log(newVectorLayer);
-    //       this.map.addLayer(newVectorLayer);
-    //     });
-    //   }
-    // },
 
   },
 
@@ -322,7 +322,7 @@ export default {
     this.initPopup();
     this.addOneFeatureLayer();
     this.addCollectionFeaturesLayer();
-    // this.addGeofeaturesLayers();
+    this.addGeofeaturesLayers();
   },
 
   watch: {
